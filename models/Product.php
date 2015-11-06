@@ -39,7 +39,7 @@ class Product extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['product_partno', 'product_name', 'product_sellingPice', 'product_stock', 'product_categoryid', 'product_description', 'product_reorderLevel', 'product_unitName', 'product_active', 'product_averageCost', 'product_markupPercent', 'product_type'], 'required'],
+            [['product_partno', 'product_name', 'product_sellingPice', 'product_stock', 'product_categoryid', 'product_description', 'product_reorderLevel', 'product_unitName', 'product_averageCost', 'product_markupPercent', 'product_type'], 'required'],
             [['product_sellingPice', 'product_averageCost'], 'number'],
             [['product_stock', 'product_categoryid', 'product_reorderLevel', 'product_markupPercent'], 'integer'],
             [['product_description'], 'string'],

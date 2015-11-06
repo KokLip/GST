@@ -89,3 +89,30 @@ a.desc:after {
     padding: 10px 20px;
     margin: 0 0 15px 0;
 }
+
+#w0{
+   margin-bottom: 1.5rem;
+}
+
+select {
+  
+    background-color: #FAFAFA;
+    border-radius: 0;
+    background-position: 100% center;
+    background-repeat: no-repeat;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #ccc;
+    color: rgba(0,0,0,0.75);
+    font-family: inherit;
+    line-height: normal;
+    padding: 0.5rem;
+    border-radius: 0;
+}
+
+input[type="search"]{
+    font-family: inherit;
+    line-height: normal;
+    padding: 0.5rem;
+    border-radius: 0;       
+}

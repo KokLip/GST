@@ -22,6 +22,8 @@ AppAsset::register($this);
     <?= Html::csrfMetaTags() ?>
     <title><?= Html::encode($this->title) ?></title>
     <?php $this->head() ?>
+	
+
 </head>
 <body>
 <?php $this->beginBody() ?>
@@ -58,10 +60,10 @@ AppAsset::register($this);
 		<?php
 			echo Menu::widget([
 				'items' => [
-					['label' => 'Admin', 'url' => ['company/view']],
-					['label' => 'Category', 'url' => ['category/index']],
-					['label' => 'Products', 'url' => ['product/index']],
-					['label' => 'Customers', 'url' => ['#']],
+					['label' => 'Admin', 'url' => ['company/view'], 'active'=> \Yii::$app->controller->id == 'company'],
+					['label' => 'Category', 'url' => ['/category'], 'active'=> \Yii::$app->controller->id == 'category'],
+					['label' => 'Products', 'url' => ['/product'], 'active'=> \Yii::$app->controller->id == 'product'],
+					['label' => 'Customers', 'url' => ['/customer'], 'active'=> \Yii::$app->controller->id == 'customer'],
 					['label' => 'Purchase Order', 'url' => ["#"]],
 					['label' => 'Quotation', 'url' => ['#']],
 					['label' => 'Delivery Order', 'url' => ['#']],
@@ -91,6 +93,11 @@ AppAsset::register($this);
 
 
 <?php $this->endBody() ?>
+<script type='text/javascript'>
+			$(document).ready(function(){
+				$('#example').DataTable();
+			});		
+	</script>
 </body>
 </html>
 <?php $this->endPage() ?>
