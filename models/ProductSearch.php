@@ -40,9 +40,45 @@ class ProductSearch extends Product
      *
      * @return ActiveDataProvider
      */
-    public function search($params)
+	public function search_product($params)
     {
-        $query = Product::find();
+        $query = Product::find()->where(['product_type' => 'p']);
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
+
+        $this->load($params);
+
+        if (!$this->validate()) {
+            // uncomment the following line if you do not want to return any records when validation fails
+            // $query->where('0=1');
+            return $dataProvider;
+        }
+
+        $query->andFilterWhere([
+            'product_id' => $this->product_id,
+            'product_sellingPice' => $this->product_sellingPice,
+            'product_stock' => $this->product_stock,
+            'product_categoryid' => $this->product_categoryid,
+            'product_reorderLevel' => $this->product_reorderLevel,
+            'product_averageCost' => $this->product_averageCost,
+            'product_markupPercent' => $this->product_markupPercent,
+        ]);
+
+        $query->andFilterWhere(['like', 'product_partno', $this->product_partno])
+            ->andFilterWhere(['like', 'product_name', $this->product_name])
+            ->andFilterWhere(['like', 'product_description', $this->product_description])
+            ->andFilterWhere(['like', 'product_unitName', $this->product_unitName])
+            ->andFilterWhere(['like', 'product_active', $this->product_active])
+            ->andFilterWhere(['like', 'product_type', $this->product_type]);
+
+        return $dataProvider;
+    } 
+	
+    public function search_service($params)
+    {
+        $query = Product::find()->where(['product_type' => 's']);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

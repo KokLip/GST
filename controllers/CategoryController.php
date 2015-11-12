@@ -3,11 +3,13 @@
 namespace app\controllers;
 
 use Yii;
+use yii\filters\AccessControl;
 use app\models\Category;
 use app\models\CategorySearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use app\models\Access;
 
 /**
  * CategoryController implements the CRUD actions for Category model.
@@ -16,7 +18,53 @@ class CategoryController extends Controller
 {
     public function behaviors()
     {
-        return [
+		$index = '';
+		$view = '';
+		$update = '';
+		$create = '';
+		$delete = '';
+		
+		if(!(Yii::$app->user->isGuest)){
+			$uid = Yii::$app->user->identity->user_id;
+			$accessList = Access::find()->where(['user_id' => $uid])->one();
+			
+			if($accessList->access_category_index == 1){
+				$index = 'index';
+			}
+					
+			if($accessList->access_category_view == 1){
+				$view = 'view';
+			}
+			
+			if($accessList->access_category_update == 1){
+				$update = 'update';
+			}
+			
+			if($accessList->access_category_create == 1){
+				$create = 'create';
+			}
+			
+			if($accessList->access_category_delete == 1){
+				$delete = 'delete';
+			}
+		}
+		
+        return [			
+			'access' => [
+                'class' => AccessControl::className(),
+                'only' => ['index', 'view', 'create', 'update', 'delete'],
+                'rules' => [
+                    [
+                        'allow' => false,
+                        'roles' => ['?'],
+                    ],	
+					[
+                        'allow' => true,
+						'actions' => [$index, $view, $create, $update, $delete],
+                        'roles' => ['@'],
+                    ],
+                ],
+            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [

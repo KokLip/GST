@@ -2,42 +2,56 @@
 
 use yii\helpers\Html;
 use fedemotta\datatables\DataTables;
-use yii\helpers\Url;
+use yii\bootstrap\Tabs;
 
 /* @var $this yii\web\View */
-/* @var $searchModel app\models\CategorySearch */
+/* @var $searchModel app\models\ProductSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Categories';
+$this->title = 'Services';
 $this->params['breadcrumbs'][] = $this->title;
 $session = Yii::$app->session;
 
-if($session->get('accessList')->access_category_view == 1){
+if($session->get('accessList')->access_product_view == 1){
 	$view = '{view}';
 }else{
 	$view = '';
 }
 
-if($session->get('accessList')->access_category_update == 1){
+if($session->get('accessList')->access_product_update == 1){
 	$update = '{update}';
 }else{
 	$update = '';
 }
 
-if($session->get('accessList')->access_category_delete == 1){
+if($session->get('accessList')->access_product_delete == 1){
 	$delete = '{delete}';
 }else{
 	$delete = '';
 }
 ?>
-<div class="category-index">
+<div class="product-index">
 
     <h1 class="page-header"><?= Html::encode($this->title) ?></h1>
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?= $session->get('accessList')->access_category_create == 1 ? Html::a('Create Category', ['create'], ['class' => 'btn btn-success']): ''; ?>
+        <?= $session->get('accessList')->access_product_create == 1 ? Html::a('Create', ['create'], ['class' => 'btn btn-success']): ''; ?>
     </p>
+	
+	<?php echo Tabs::widget([
+		'items' => [
+			[
+			  'label' => 'Product',			  
+			  'url' => ['product/index'],
+			],
+			[
+			  'label' => 'Service',
+			  'active' => true,
+			  'url' => ['product/service'],
+			],          
+		],
+	]); ?>
 
     <?= DataTables::widget([
         'dataProvider' => $dataProvider,
@@ -45,8 +59,17 @@ if($session->get('accessList')->access_category_delete == 1){
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
             
-            'category_name',
-            'category_description:ntext',
+            'product_name',
+			'product_averageCost',
+            'product_sellingPice',
+            //'product_stock',
+            // 'product_categoryid',
+            // 'product_description:ntext',
+            // 'product_reorderLevel',
+            // 'product_unitName',
+            // 'product_active',            
+            // 'product_markupPercent',
+            // 'product_type',
 
             [
 				'class' => 'yii\grid\ActionColumn',	
@@ -63,5 +86,5 @@ if($session->get('accessList')->access_category_delete == 1){
 			],
         ],
     ]); ?>
-	
+
 </div>

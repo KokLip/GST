@@ -9,20 +9,21 @@ use yii\widgets\DetailView;
 $this->title = $model->category_name;
 $this->params['breadcrumbs'][] = ['label' => 'Categories', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
+$session = Yii::$app->session;
 ?>
 <div class="category-view">
 
     <h1 class="page-header"><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Update', ['update', 'id' => $model->category_id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->category_id], [
+        <?= $session->get('accessList')->access_category_update == 1 ? Html::a('Update', ['update', 'id' => $model->category_id], ['class' => 'btn btn-primary']):''; ?>
+        <?= $session->get('accessList')->access_category_delete == 1 ? Html::a('Delete', ['delete', 'id' => $model->category_id], [
             'class' => 'btn btn-danger',
             'data' => [
                 'confirm' => 'Are you sure you want to delete this item?',
                 'method' => 'post',
             ],
-        ]) ?>
+        ]): ''; ?>
     </p>
 
     <?= DetailView::widget([

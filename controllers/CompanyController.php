@@ -3,20 +3,53 @@
 namespace app\controllers;
 
 use Yii;
+use yii\filters\AccessControl;
 use app\models\Company;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use app\models\Access;
 
 /**
  * CompanyController implements the CRUD actions for Company model.
  */
 class CompanyController extends Controller
-{
+{		
     public function behaviors()
     {
+		$view = '';
+		$update = '';
+		
+		if(!(Yii::$app->user->isGuest)){
+			$uid = Yii::$app->user->identity->user_id;
+			$accessList = Access::find()->where(['user_id' => $uid])->one();
+					
+			if($accessList->access_admin_view == 1){
+				$view = 'view';
+			}
+			
+			if($accessList->access_admin_update == 1){
+				$update = 'update';
+			}
+		}
+		
         return [
+			'access' => [
+                'class' => AccessControl::className(),
+                'only' => [$view, $update,],
+                'rules' => [
+                    [
+                        'allow' => false,
+                        'roles' => ['?'],
+                    ],
+					[
+                        'allow' => true,
+						'actions' => [$view, $update],
+                        'roles' => ['@'],
+                    ],					
+                ],
+            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
@@ -26,20 +59,7 @@ class CompanyController extends Controller
         ];
     }
 
-    /**
-     * Lists all Company models.
-     * @return mixed
-     */
-    public function actionIndex()
-    {
-        $dataProvider = new ActiveDataProvider([
-            'query' => Company::find(),
-        ]);
-
-        return $this->render('index', [
-            'dataProvider' => $dataProvider,
-        ]);
-    }
+   
 
     /**
      * Displays a single Company model.
@@ -58,18 +78,7 @@ class CompanyController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate()
-    {
-        $model = new Company();
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->company_id]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
-        }
-    }
+   
 
     /**
      * Updates an existing Company model.

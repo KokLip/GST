@@ -3,12 +3,14 @@
 namespace app\controllers;
 
 use Yii;
+use yii\filters\AccessControl;
 use app\models\Product;
 use app\models\ProductSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use app\models\Category;
+use app\models\Access;
 
 /**
  * ProductController implements the CRUD actions for Product model.
@@ -17,7 +19,53 @@ class ProductController extends Controller
 {
     public function behaviors()
     {
+		$index = '';
+		$view = '';
+		$update = '';
+		$create = '';
+		$delete = '';
+		
+		if(!(Yii::$app->user->isGuest)){
+			$uid = Yii::$app->user->identity->user_id;
+			$accessList = Access::find()->where(['user_id' => $uid])->one();
+			
+			if($accessList->access_product_index == 1){
+				$index = 'index';
+			}
+					
+			if($accessList->access_product_view == 1){
+				$view = 'view';
+			}
+			
+			if($accessList->access_product_update == 1){
+				$update = 'update';
+			}
+			
+			if($accessList->access_product_create == 1){
+				$create = 'create';
+			}
+			
+			if($accessList->access_product_delete == 1){
+				$delete = 'delete';
+			}
+		}
+		
         return [
+			'access' => [
+                'class' => AccessControl::className(),
+                'only' => ['index', 'view', 'create', 'update', 'delete'],
+                'rules' => [
+                    [
+                        'allow' => false,
+                        'roles' => ['?'],
+                    ],	
+					[
+                        'allow' => true,
+						'actions' => [$index, $view, $create, $update, $delete],
+                        'roles' => ['@'],
+                    ],					
+                ],
+            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
@@ -34,9 +82,20 @@ class ProductController extends Controller
     public function actionIndex()
     {
         $searchModel = new ProductSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider = $searchModel->search_product(Yii::$app->request->queryParams);
 
         return $this->render('index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+	
+	public function actionService()
+    {
+        $searchModel = new ProductSearch();
+        $dataProvider = $searchModel->search_service(Yii::$app->request->queryParams);
+
+        return $this->render('service', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);

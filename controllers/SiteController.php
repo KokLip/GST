@@ -9,6 +9,9 @@ use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
 use app\models\EntryForm;
+use yii\web\Session;
+use app\models\Access;
+use yii\data\ActiveDataProvider;
 
 class SiteController extends Controller
 {
@@ -17,12 +20,17 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout'],
+                'only' => ['logout', 'login', 'contact'],
                 'rules' => [
                     [
-                        'actions' => ['logout'],
+                        'actions' => ['logout', 'contact'],
                         'allow' => true,
                         'roles' => ['@'],
+                    ],
+					[
+                         'actions' => ['login'],
+                        'allow' => true,
+                        'roles' => ['?'],
                     ],
                 ],
             ],
@@ -50,7 +58,7 @@ class SiteController extends Controller
 
     public function actionIndex()
     {
-        return $this->render('index');
+		return $this->render('index');
     }
 
     public function actionLogin()
@@ -61,6 +69,10 @@ class SiteController extends Controller
 
         $model = new LoginForm();
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
+			$uid = Yii::$app->user->identity->user_id;
+			$accessList = Access::find()->where(['user_id' => $uid])->one();
+			$session = Yii::$app->session;
+			$session->set('accessList', $accessList);
             return $this->goBack();
         }
         return $this->render('login', [

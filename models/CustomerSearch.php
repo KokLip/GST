@@ -41,7 +41,7 @@ class CustomerSearch extends Customer
      */
     public function search_customer($params)
     {
-        $query = Customer::find()->where(['customer_type' => 'C']);
+        $query = Customer::find();
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

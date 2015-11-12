@@ -12,7 +12,7 @@ if($model->customer_type == 'C'){
 	$page = 'supplier';
 }
 
-$this->title = 'Update ' . $type .':' . ' ' . $model->customer_name;
+$this->title = 'Update Customer:' .  $model->customer_name;
 $this->params['breadcrumbs'][] = ['label' => $type, 'url' => [$page]];
 $this->params['breadcrumbs'][] = 'Update';
 ?>

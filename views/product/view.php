@@ -6,9 +6,18 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model app\models\Product */
 
+if($model->product_type == 'p'){
+	$type = 'Products';
+	$page = 'index';
+}elseif($model->product_type == 's'){
+	$type = 'Services';
+	$page = 'service';
+}
+
 $this->title = $model->product_name;
-$this->params['breadcrumbs'][] = ['label' => 'Products', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => $type, 'url' => [$page]];
 $this->params['breadcrumbs'][] = $this->title;
+$session = Yii::$app->session;
 
 if($model->product_type == "p"){
 	$model->product_type = "Product";
@@ -30,14 +39,14 @@ if($model->product_type == "p"){
     <h1 class="page-header"><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Update', ['update', 'id' => $model->product_id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->product_id], [
+        <?= $session->get('accessList')->access_product_update == 1 ? Html::a('Update', ['update', 'id' => $model->product_id], ['class' => 'btn btn-primary']): ''; ?>
+        <?= $session->get('accessList')->access_product_delete == 1 ? Html::a('Delete', ['delete', 'id' => $model->product_id], [
             'class' => 'btn btn-danger',
             'data' => [
                 'confirm' => 'Are you sure you want to delete this item?',
                 'method' => 'post',
             ],
-        ]) ?>
+        ]): ''; ?>
     </p>
 
     <?= DetailView::widget([

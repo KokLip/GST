@@ -1,52 +1,63 @@
 <?php
 
 use yii\helpers\Html;
-use fedemotta\datatables\DataTables;
-use yii\helpers\Url;
+use yii\grid\GridView;
 
 /* @var $this yii\web\View */
-/* @var $searchModel app\models\CategorySearch */
+/* @var $searchModel app\models\SupplierSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Categories';
+$this->title = 'Suppliers';
 $this->params['breadcrumbs'][] = $this->title;
 $session = Yii::$app->session;
 
-if($session->get('accessList')->access_category_view == 1){
+if($session->get('accessList')->access_supplier_view == 1){
 	$view = '{view}';
 }else{
 	$view = '';
 }
 
-if($session->get('accessList')->access_category_update == 1){
+if($session->get('accessList')->access_supplier_update == 1){
 	$update = '{update}';
 }else{
 	$update = '';
 }
 
-if($session->get('accessList')->access_category_delete == 1){
+if($session->get('accessList')->access_supplier_delete == 1){
 	$delete = '{delete}';
 }else{
 	$delete = '';
 }
 ?>
-<div class="category-index">
+<div class="supplier-index">
 
     <h1 class="page-header"><?= Html::encode($this->title) ?></h1>
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?= $session->get('accessList')->access_category_create == 1 ? Html::a('Create Category', ['create'], ['class' => 'btn btn-success']): ''; ?>
+        <?= $session->get('accessList')->access_supplier_create == 1 ? Html::a('Create Supplier', ['create'], ['class' => 'btn btn-success']): ''; ?>
     </p>
 
-    <?= DataTables::widget([
+    <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-            
-            'category_name',
-            'category_description:ntext',
+
+            //'supplier_id',
+            'supplier_name',
+            //'supplier_add1:ntext',
+            //'supplier_add2:ntext',
+            //'supplier_add3:ntext',
+            // 'supplier_poscode',
+            'supplier_tel',
+            'supplier_fax',
+            'supplier_email:email',
+            // 'supplier_type',
+            // 'supplier_remark:ntext',
+            // 'supplier_attention',
+            // 'supplier_active',
+            // 'supplier_GSTno',
 
             [
 				'class' => 'yii\grid\ActionColumn',	
@@ -63,5 +74,5 @@ if($session->get('accessList')->access_category_delete == 1){
 			],
         ],
     ]); ?>
-	
+
 </div>

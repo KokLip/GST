@@ -38,9 +38,7 @@ use yii\bootstrap\ActiveForm;
 
     <?= $form->field($model, 'customer_fax')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'customer_email')->textInput(['maxlength' => true]) ?>
-
-    <?= $form->field($model, 'customer_type')->inline()->radioList(array('C'=>'Customer', 'S'=>'Supplier')); ?>
+    <?= $form->field($model, 'customer_email')->textInput(['maxlength' => true]) ?>    
 
     <?= $form->field($model, 'customer_remark')->textarea(['rows' => 6]) ?>
 
@@ -53,5 +51,6 @@ use yii\bootstrap\ActiveForm;
     </div>
 
     <?php ActiveForm::end(); ?>
-
+	
+	<?php /* $form->field($model, 'customer_type')->inline()->radioList(array('C'=>'Customer', 'S'=>'Supplier')); */?>
 </div>
