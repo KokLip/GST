@@ -10,6 +10,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use app\models\Access;
+use app\models\Access2;
 
 /**
  * CustomerController implements the CRUD actions for Customer model.
@@ -26,25 +27,29 @@ class CustomerController extends Controller
 		
 		if(!(Yii::$app->user->isGuest)){
 			$uid = Yii::$app->user->identity->user_id;
-			$accessList = Access::find()->where(['user_id' => $uid])->one();
+			$accessIndex = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 13])->one();
+			$accessView = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 14])->one();
+			$accessCreate = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 15])->one();
+			$accessUpdate = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 16])->one();
+			$accessDelete = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 17])->one();
 			
-			if($accessList->access_customer_index == 1){
+			if($accessIndex != NULL){
 				$index = 'index';
 			}
 					
-			if($accessList->access_customer_view == 1){
+			if($accessView != NULL){
 				$view = 'view';
 			}
 			
-			if($accessList->access_customer_update == 1){
+			if($accessUpdate != NULL){
 				$update = 'update';
 			}
 			
-			if($accessList->access_customer_create == 1){
+			if($accessCreate != NULL){
 				$create = 'create';
 			}
 			
-			if($accessList->access_customer_delete == 1){
+			if($accessDelete != NULL){
 				$delete = 'delete';
 			}
 		}
@@ -82,10 +87,20 @@ class CustomerController extends Controller
     {
         $searchModel = new CustomerSearch();
         $dataProvider = $searchModel->search_customer(Yii::$app->request->queryParams);
+		
+		$uid = Yii::$app->user->identity->user_id;
+		$accessView = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 14])->one();
+		$accessCreate = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 15])->one();
+		$accessUpdate = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 16])->one();
+		$accessDelete = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 17])->one();
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+			'accessView' => $accessView,
+			'accessCreate' => $accessCreate,
+			'accessUpdate' => $accessUpdate,
+			'accessDelete' => $accessDelete,
         ]);
     }
 
@@ -96,8 +111,14 @@ class CustomerController extends Controller
      */
     public function actionView($id)
     {
+		$uid = Yii::$app->user->identity->user_id;		
+		$accessUpdate = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 16])->one();
+		$accessDelete = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 17])->one();
+		
         return $this->render('view', [
             'model' => $this->findModel($id),
+			'accessUpdate' => $accessUpdate,
+			'accessDelete' => $accessDelete,
         ]);
     }
 

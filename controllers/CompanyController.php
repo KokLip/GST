@@ -10,6 +10,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use app\models\Access;
+use app\models\Access2;
 
 /**
  * CompanyController implements the CRUD actions for Company model.
@@ -23,21 +24,23 @@ class CompanyController extends Controller
 		
 		if(!(Yii::$app->user->isGuest)){
 			$uid = Yii::$app->user->identity->user_id;
-			$accessList = Access::find()->where(['user_id' => $uid])->one();
-					
-			if($accessList->access_admin_view == 1){
+			$accessView = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 1])->one();			
+			$accessUpdate = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 2])->one();			
+								
+			if($accessView != NULL){
 				$view = 'view';
 			}
 			
-			if($accessList->access_admin_update == 1){
+			if($accessUpdate != NULL){
 				$update = 'update';
 			}
+			
 		}
 		
         return [
 			'access' => [
                 'class' => AccessControl::className(),
-                'only' => [$view, $update,],
+                'only' => ['view', 'update'],
                 'rules' => [
                     [
                         'allow' => false,
@@ -68,8 +71,13 @@ class CompanyController extends Controller
      */
     public function actionView($id = 1)
     {
+		$uid = Yii::$app->user->identity->user_id;
+		$accessView = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 1])->one();			
+		$accessUpdate = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 2])->one();
+			
         return $this->render('view', [
             'model' => $this->findModel($id),
+			'accessUpdate' => $accessUpdate,
         ]);
     }
 

@@ -5,20 +5,19 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model app\models\Customer */
 
-$type = 'Customers';
-$page = 'index';
+$this->title = 'Update Access';
 
-
-$this->title = 'Update Customer:' .  $model->customer_name;
-$this->params['breadcrumbs'][] = ['label' => $type, 'url' => [$page]];
+$this->params['breadcrumbs'][] = ['label' => 'Access', 'url' => ['index']];
 $this->params['breadcrumbs'][] = 'Update';
+$this->registerJsFile('@web/js/accessCheckbox.js', ['depends' => [\yii\web\JqueryAsset::className()]]);
 ?>
 <div class="customer-update">
 
     <h1 class="page-header"><?= Html::encode($this->title) ?></h1>
 
     <?= $this->render('_form', [
-        'model' => $model,
+		'model' => $model,
+		'currentaccess' => $currentaccess,
     ]) ?>
 
 </div>

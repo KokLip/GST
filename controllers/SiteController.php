@@ -69,10 +69,10 @@ class SiteController extends Controller
 
         $model = new LoginForm();
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
-			$uid = Yii::$app->user->identity->user_id;
+			/* $uid = Yii::$app->user->identity->user_id;
 			$accessList = Access::find()->where(['user_id' => $uid])->one();
 			$session = Yii::$app->session;
-			$session->set('accessList', $accessList);
+			$session->set('accessList', $accessList); */
             return $this->goBack();
         }
         return $this->render('login', [

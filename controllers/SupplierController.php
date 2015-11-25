@@ -10,6 +10,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use app\models\Access;
+use app\models\Access2;
 
 /**
  * SupplierController implements the CRUD actions for Supplier model.
@@ -26,25 +27,29 @@ class SupplierController extends Controller
 		
 		if(!(Yii::$app->user->isGuest)){
 			$uid = Yii::$app->user->identity->user_id;
-			$accessList = Access::find()->where(['user_id' => $uid])->one();
+			$accessIndex = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 18])->one();
+			$accessView = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 19])->one();
+			$accessCreate = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 20])->one();
+			$accessUpdate = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 21])->one();
+			$accessDelete = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 22])->one();
 			
-			if($accessList->access_supplier_index == 1){
+			if($accessIndex != NULL){
 				$index = 'index';
 			}
 					
-			if($accessList->access_supplier_view == 1){
+			if($accessView != NULL){
 				$view = 'view';
 			}
 			
-			if($accessList->access_supplier_update == 1){
+			if($accessUpdate != NULL){
 				$update = 'update';
 			}
 			
-			if($accessList->access_supplier_create == 1){
+			if($accessCreate != NULL){
 				$create = 'create';
 			}
 			
-			if($accessList->access_supplier_delete == 1){
+			if($accessDelete != NULL){
 				$delete = 'delete';
 			}
 		}
@@ -82,10 +87,19 @@ class SupplierController extends Controller
     {
         $searchModel = new SupplierSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+		$uid = Yii::$app->user->identity->user_id;
+		$accessView = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 19])->one();
+		$accessCreate = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 20])->one();
+		$accessUpdate = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 21])->one();
+		$accessDelete = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 22])->one();
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+			'accessView' => $accessView,
+			'accessCreate' => $accessCreate,
+			'accessUpdate' => $accessUpdate,
+			'accessDelete' => $accessDelete,
         ]);
     }
 
@@ -96,8 +110,14 @@ class SupplierController extends Controller
      */
     public function actionView($id)
     {
+		$uid = Yii::$app->user->identity->user_id;		
+		$accessUpdate = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 21])->one();
+		$accessDelete = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 22])->one();
+		
         return $this->render('view', [
             'model' => $this->findModel($id),
+			'accessUpdate' => $accessUpdate,
+			'accessDelete' => $accessDelete,
         ]);
     }
 

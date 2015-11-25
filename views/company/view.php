@@ -9,8 +9,6 @@ use yii\widgets\DetailView;
 $this->title = "Company Infomation";
 $this->params['breadcrumbs'][] = ['label' => 'Companies', 'url' => ['view']];
 
-$session = Yii::$app->session;
-
 $model->company_taxPercent = $model->company_taxPercent  . "%";
 
 if($model->company_inventory == "p"){
@@ -66,7 +64,7 @@ if($model->company_printSize == 0){
     <h1 class="page-header"><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= $session->get('accessList')->access_admin_update == 1 ? Html::a('Update', ['update', 'id' => $model->company_id], ['class' => 'btn btn-primary']): ''; ?>
+        <?= $accessUpdate != NULL ? Html::a('Update', ['update', 'id' => $model->company_id], ['class' => 'btn btn-primary']): ''; ?>
         
     </p>
 

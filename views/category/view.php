@@ -16,8 +16,8 @@ $session = Yii::$app->session;
     <h1 class="page-header"><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= $session->get('accessList')->access_category_update == 1 ? Html::a('Update', ['update', 'id' => $model->category_id], ['class' => 'btn btn-primary']):''; ?>
-        <?= $session->get('accessList')->access_category_delete == 1 ? Html::a('Delete', ['delete', 'id' => $model->category_id], [
+        <?= $accessUpdate != NULL ? Html::a('Update', ['update', 'id' => $model->category_id], ['class' => 'btn btn-primary']):''; ?>
+        <?= $accessDelete != NULL ? Html::a('Delete', ['delete', 'id' => $model->category_id], [
             'class' => 'btn btn-danger',
             'data' => [
                 'confirm' => 'Are you sure you want to delete this item?',

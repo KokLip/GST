@@ -17,15 +17,14 @@ if($model->customer_type == 'C'){
 $this->title = $model->customer_name;
 $this->params['breadcrumbs'][] = ['label' => 'Customers', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
-$session = Yii::$app->session;
 ?>
 <div class="customer-view">
 
     <h1 class="page-header"><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= $session->get('accessList')->access_product_update == 1 ? Html::a('Update', ['update', 'id' => $model->customer_id], ['class' => 'btn btn-primary']): ''; ?>
-        <?= $session->get('accessList')->access_product_delete == 1 ? Html::a('Delete', ['delete', 'id' => $model->customer_id], [
+        <?= $accessUpdate != NULL ? Html::a('Update', ['update', 'id' => $model->customer_id], ['class' => 'btn btn-primary']): ''; ?>
+        <?= $accessDelete != NULL ? Html::a('Delete', ['delete', 'id' => $model->customer_id], [
             'class' => 'btn btn-danger',
             'data' => [
                 'confirm' => 'Are you sure you want to delete this item?',

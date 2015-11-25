@@ -10,6 +10,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use app\models\Access;
+use app\models\Access2;
 
 /**
  * CategoryController implements the CRUD actions for Category model.
@@ -26,25 +27,29 @@ class CategoryController extends Controller
 		
 		if(!(Yii::$app->user->isGuest)){
 			$uid = Yii::$app->user->identity->user_id;
-			$accessList = Access::find()->where(['user_id' => $uid])->one();
+			$accessIndex = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 3])->one();
+			$accessView = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 4])->one();
+			$accessCreate = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 5])->one();
+			$accessUpdate = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 6])->one();
+			$accessDelete = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 7])->one();
 			
-			if($accessList->access_category_index == 1){
+			if($accessIndex != NULL){
 				$index = 'index';
 			}
 					
-			if($accessList->access_category_view == 1){
+			if($accessView != NULL){
 				$view = 'view';
 			}
 			
-			if($accessList->access_category_update == 1){
+			if($accessUpdate != NULL){
 				$update = 'update';
 			}
 			
-			if($accessList->access_category_create == 1){
+			if($accessCreate != NULL){
 				$create = 'create';
 			}
 			
-			if($accessList->access_category_delete == 1){
+			if($accessDelete != NULL){
 				$delete = 'delete';
 			}
 		}
@@ -82,10 +87,21 @@ class CategoryController extends Controller
     {
         $searchModel = new CategorySearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+		
+		$uid = Yii::$app->user->identity->user_id;
+		$accessIndex = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 3])->one();
+		$accessView = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 4])->one();
+		$accessCreate = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 5])->one();
+		$accessUpdate = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 6])->one();
+		$accessDelete = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 7])->one();
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+			'accessView' => $accessView,
+			'accessCreate' => $accessCreate,
+			'accessUpdate' => $accessUpdate,
+			'accessDelete' => $accessDelete,
         ]);
     }
 
@@ -96,8 +112,14 @@ class CategoryController extends Controller
      */
     public function actionView($id)
     {
+		$uid = Yii::$app->user->identity->user_id;		
+		$accessUpdate = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 6])->one();
+		$accessDelete = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 7])->one();
+		
         return $this->render('view', [
             'model' => $this->findModel($id),
+			'accessUpdate' => $accessUpdate,
+			'accessDelete' => $accessDelete,
         ]);
     }
 

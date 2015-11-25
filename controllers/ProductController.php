@@ -11,6 +11,7 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use app\models\Category;
 use app\models\Access;
+use app\models\Access2;
 
 /**
  * ProductController implements the CRUD actions for Product model.
@@ -27,25 +28,29 @@ class ProductController extends Controller
 		
 		if(!(Yii::$app->user->isGuest)){
 			$uid = Yii::$app->user->identity->user_id;
-			$accessList = Access::find()->where(['user_id' => $uid])->one();
+			$accessIndex = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 8])->one();
+			$accessView = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 9])->one();
+			$accessCreate = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 10])->one();
+			$accessUpdate = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 11])->one();
+			$accessDelete = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 12])->one();
 			
-			if($accessList->access_product_index == 1){
+			if($accessIndex != NULL){
 				$index = 'index';
 			}
 					
-			if($accessList->access_product_view == 1){
+			if($accessView != NULL){
 				$view = 'view';
 			}
 			
-			if($accessList->access_product_update == 1){
+			if($accessUpdate != NULL){
 				$update = 'update';
 			}
 			
-			if($accessList->access_product_create == 1){
+			if($accessCreate != NULL){
 				$create = 'create';
 			}
 			
-			if($accessList->access_product_delete == 1){
+			if($accessDelete != NULL){
 				$delete = 'delete';
 			}
 		}
@@ -83,10 +88,20 @@ class ProductController extends Controller
     {
         $searchModel = new ProductSearch();
         $dataProvider = $searchModel->search_product(Yii::$app->request->queryParams);
+		$uid = Yii::$app->user->identity->user_id;
+		$accessIndex = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 8])->one();
+		$accessView = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 9])->one();
+		$accessCreate = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 10])->one();
+		$accessUpdate = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 11])->one();
+		$accessDelete = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 12])->one();
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+			'accessView' => $accessView,
+			'accessCreate' => $accessCreate,
+			'accessUpdate' => $accessUpdate,
+			'accessDelete' => $accessDelete,
         ]);
     }
 	
@@ -94,10 +109,19 @@ class ProductController extends Controller
     {
         $searchModel = new ProductSearch();
         $dataProvider = $searchModel->search_service(Yii::$app->request->queryParams);
+		$uid = Yii::$app->user->identity->user_id;
+		$accessView = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 9])->one();
+		$accessCreate = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 10])->one();
+		$accessUpdate = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 11])->one();
+		$accessDelete = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 12])->one();
 
         return $this->render('service', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+			'accessView' => $accessView,
+			'accessCreate' => $accessCreate,
+			'accessUpdate' => $accessUpdate,
+			'accessDelete' => $accessDelete,
         ]);
     }
 
@@ -109,10 +133,15 @@ class ProductController extends Controller
     public function actionView($id)
     {
 		$categories = Category::find()->orderBy('category_id')->all();
+		$uid = Yii::$app->user->identity->user_id;		
+		$accessUpdate = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 11])->one();
+		$accessDelete = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 12])->one();
 		
         return $this->render('view', [
             'model' => $this->findModel($id),
 			'categories' => $categories,
+			'accessUpdate' => $accessUpdate,
+			'accessDelete' => $accessDelete,
         ]);
     }
 

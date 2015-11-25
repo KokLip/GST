@@ -12,19 +12,19 @@ $this->title = 'Services';
 $this->params['breadcrumbs'][] = $this->title;
 $session = Yii::$app->session;
 
-if($session->get('accessList')->access_product_view == 1){
+if($accessView != NULL){
 	$view = '{view}';
 }else{
 	$view = '';
 }
 
-if($session->get('accessList')->access_product_update == 1){
+if($accessUpdate != NULL){
 	$update = '{update}';
 }else{
 	$update = '';
 }
 
-if($session->get('accessList')->access_product_delete == 1){
+if($accessDelete != NULL){
 	$delete = '{delete}';
 }else{
 	$delete = '';
@@ -36,7 +36,7 @@ if($session->get('accessList')->access_product_delete == 1){
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?= $session->get('accessList')->access_product_create == 1 ? Html::a('Create', ['create'], ['class' => 'btn btn-success']): ''; ?>
+        <?= $accessCreate != NULL ? Html::a('Create', ['create'], ['class' => 'btn btn-success']): ''; ?>
     </p>
 	
 	<?php echo Tabs::widget([

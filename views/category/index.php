@@ -10,21 +10,20 @@ use yii\helpers\Url;
 
 $this->title = 'Categories';
 $this->params['breadcrumbs'][] = $this->title;
-$session = Yii::$app->session;
 
-if($session->get('accessList')->access_category_view == 1){
+if($accessView != NULL){
 	$view = '{view}';
 }else{
 	$view = '';
 }
 
-if($session->get('accessList')->access_category_update == 1){
+if($accessUpdate != NULL){
 	$update = '{update}';
 }else{
 	$update = '';
 }
 
-if($session->get('accessList')->access_category_delete == 1){
+if($accessDelete != NULL){
 	$delete = '{delete}';
 }else{
 	$delete = '';
@@ -36,7 +35,7 @@ if($session->get('accessList')->access_category_delete == 1){
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?= $session->get('accessList')->access_category_create == 1 ? Html::a('Create Category', ['create'], ['class' => 'btn btn-success']): ''; ?>
+        <?= $accessCreate != NULL ? Html::a('Create Category', ['create'], ['class' => 'btn btn-success']): ''; ?>
     </p>
 
     <?= DataTables::widget([
