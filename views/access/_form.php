@@ -148,6 +148,63 @@ use yii\helpers\ArrayHelper;
 				</li>
 			</ul>
 		</li>
+		<li>	
+			<input type="checkbox" name="Access2[permission][]" value="25" class="module_checkboxes " <?php checked(25, $accessid); ?>>	
+			<span class="text-success">Tax Code:</span>
+			<span class="text-warning">View, Create, Update and Delete</span>
+			<ul>
+				<li>
+					<input type="checkbox" name="Access2[permission][]" value="26" <?php checked(26, $accessid); ?>>		
+					<span class="text-info">View</span>
+				</li>
+				<li>
+					<input type="checkbox" name="Access2[permission][]" value="27" <?php checked(27, $accessid); ?>>		
+					<span class="text-info">Create</span>
+				</li>
+				<li>
+					<input type="checkbox" name="Access2[permission][]" value="28" <?php checked(28, $accessid); ?>>			
+					<span class="text-info">Update</span>
+				</li>
+				<li>
+					<input type="checkbox" name="Access2[permission][]" value="29" <?php checked(29, $accessid); ?>>		
+					<span class="text-info">Delete</span>
+				</li>
+			</ul>
+		</li>
+		<li>	
+			<input type="checkbox" name="Access2[permission][]" value="30" class="module_checkboxes " <?php checked(30, $accessid); ?>>	
+			<span class="text-success">Quotation:</span>
+			<span class="text-warning">View, Create, Update and Delete</span>
+			<ul>
+				<li>
+					<input type="checkbox" name="Access2[permission][]" value="31" <?php checked(31, $accessid); ?>>		
+					<span class="text-info">View</span>
+				</li>
+				<li>
+					<input type="checkbox" name="Access2[permission][]" value="32" <?php checked(32, $accessid); ?>>		
+					<span class="text-info">Create</span>
+				</li>
+				<li>
+					<input type="checkbox" name="Access2[permission][]" value="33" <?php checked(33, $accessid); ?>>			
+					<span class="text-info">Update</span>
+				</li>
+				<li>
+					<input type="checkbox" name="Access2[permission][]" value="34" <?php checked(34, $accessid); ?>>		
+					<span class="text-info">Delete</span>
+				</li>
+			</ul>
+		</li>
+		<li>	
+			<input type="checkbox" name="Access2[permission][]" value="23" class="module_checkboxes " <?php checked(23, $accessid); ?>>	
+			<span class="text-success">Access Control:</span>
+			<span class="text-warning">Update</span>
+			<ul>
+				<li>
+					<input type="checkbox" name="Access2[permission][]" value="24" <?php checked(24, $accessid); ?>>		
+					<span class="text-info">View</span>
+				</li>				
+			</ul>
+		</li>
 	</ul>
 	
 	<div class="form-group">

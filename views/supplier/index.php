@@ -1,6 +1,7 @@
 <?php
 
 use yii\helpers\Html;
+use fedemotta\datatables\DataTables;
 use yii\grid\GridView;
 
 /* @var $this yii\web\View */
@@ -38,7 +39,7 @@ if($accessDelete != NULL){
         <?= $accessCreate != NULL ? Html::a('Create Supplier', ['create'], ['class' => 'btn btn-success']): ''; ?>
     </p>
 
-    <?= GridView::widget([
+    <?= DataTables::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [

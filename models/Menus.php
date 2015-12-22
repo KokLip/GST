@@ -16,6 +16,8 @@ class Menus extends Model
 		$accessProduct = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 8])->one();
 		$accessCustomer = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 13])->one();
 		$accessSupplier = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 18])->one();
+		$accessTax = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 25])->one();
+		$accessQuotation = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 30])->one();
 		$accessAccess = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 23])->one();
 		
 		if($accessAdmin != NULL){
@@ -52,9 +54,23 @@ class Menus extends Model
 		}else{
 		
 		}	
+		
+		if($accessTax != NULL){
+			$modSupplier = Module::find()->where(['module_id' => 6])->one();
+			$items[] = ['label' => $modSupplier->module_name, 'url' => [$modSupplier->module_url], 'active'=> \Yii::$app->controller->id == $modSupplier->module_tab_active];
+		}else{
+		
+		}
+		
+		if($accessQuotation != NULL){
+			$modSupplier = Module::find()->where(['module_id' => 7])->one();
+			$items[] = ['label' => $modSupplier->module_name, 'url' => [$modSupplier->module_url], 'active'=> \Yii::$app->controller->id == $modSupplier->module_tab_active];
+		}else{
+		
+		}			
 
 		if($accessAccess != NULL){
-			$modSupplier = Module::find()->where(['module_id' => 6])->one();
+			$modSupplier = Module::find()->where(['module_id' => 8])->one();
 			$items[] = ['label' => $modSupplier->module_name, 'url' => [$modSupplier->module_url], 'active'=> \Yii::$app->controller->id == $modSupplier->module_tab_active];
 		}else{
 		

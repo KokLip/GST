@@ -38,7 +38,13 @@ use yii\helpers\ArrayHelper;
 	<?= $form->field($model, 'product_type')->inline()->radioList(array('p'=>'Product', 's'=>'Service')); ?>
 	
 	<?php $listData=ArrayHelper::map($categories,'category_id','category_name');
-		echo $form->field($model, 'product_categoryid')->dropdownList($listData); ?>  
+		echo $form->field($model, 'product_categoryid')->dropdownList($listData); ?>
+
+	<?php $listData1=ArrayHelper::map($tax,'tax_code','tax_code');
+		echo $form->field($model, 'product_supply_tax')->dropdownList($listData1); ?>	
+
+	<?php $listData2=ArrayHelper::map($tax2,'tax_code','tax_code');
+		echo $form->field($model, 'product_purchase_tax')->dropdownList($listData2); ?>
 
     <?= $form->field($model, 'product_stock')->textInput() ?>    
     

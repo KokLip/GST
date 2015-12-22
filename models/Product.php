@@ -43,6 +43,7 @@ class Product extends \yii\db\ActiveRecord
             [['product_sellingPice', 'product_averageCost'], 'number'],
             [['product_stock', 'product_categoryid', 'product_reorderLevel', 'product_markupPercent'], 'integer'],
             [['product_description'], 'string'],
+			[['product_supply_tax', 'product_purchase_tax'], 'string', 'max' => 10],
             [['product_partno'], 'string', 'max' => 15],
             [['product_name'], 'string', 'max' => 55],
             [['product_unitName'], 'string', 'max' => 6],
@@ -69,6 +70,7 @@ class Product extends \yii\db\ActiveRecord
             'product_averageCost' => 'Product Average Cost',
             'product_markupPercent' => 'Product Markup Percent',
             'product_type' => 'Product Type',
+			'product_supply_tax' => 'Product Supply Tax',
         ];
     }
 
