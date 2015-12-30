@@ -10,9 +10,14 @@ use dosamigos\datepicker\DatePicker;
 ?>
 
 <?php 
-$lstquotation = $quotation->quotation_id;
-$quotation_id = $lstquotation + 1;
-$quotation_no = 1000 +  $quotation_id;
+if($quotation != NULL){ 
+	$lstquotation = $quotation->quotation_id;
+	$quotation_id = $lstquotation + 1;
+	$quotation_no = 1000 +  $quotation_id;
+}else{
+	$quotation_id = 0;
+	$quotation_no = 1000;
+}
 ?>
 
 <link rel='stylesheet' type='text/css' href='css/style.css' />
@@ -38,194 +43,8 @@ $quotation_no = 1000 +  $quotation_id;
 		$customerList = json_encode($listData3);
 	?>
 	<?php $model->quotation_date =  date('Y-m-d');?>
-<script>
-function print_today() {
-  // ***********************************************
-  // AUTHOR: WWW.CGISCRIPT.NET, LLC
-  // URL: http://www.cgiscript.net
-  // Use the script, just leave this message intact.
-  // Download your FREE CGI/Perl Scripts today!
-  // ( http://www.cgiscript.net/scripts.htm )
-  // ***********************************************
-  var now = new Date();
-  var months = new Array('January','February','March','April','May','June','July','August','September','October','November','December');
-  var date = ((now.getDate()<10) ? "0" : "")+ now.getDate();
-  function fourdigits(number) {
-    return (number < 1000) ? number + 1900 : number;
-  }
-  var today =  months[now.getMonth()] + " " + date + ", " + (fourdigits(now.getYear()));
-  return today;
-}
-
-// from http://www.mediacollege.com/internet/javascript/number/round.html
-function roundNumber(number,decimals) {
-  var newString;// The new rounded number
-  decimals = Number(decimals);
-  if (decimals < 1) {
-    newString = (Math.round(number)).toString();
-  } else {
-    var numString = number.toString();
-    if (numString.lastIndexOf(".") == -1) {// If there is no decimal point
-      numString += ".";// give it one at the end
-    }
-    var cutoff = numString.lastIndexOf(".") + decimals;// The point at which to truncate the number
-    var d1 = Number(numString.substring(cutoff,cutoff+1));// The value of the last decimal place that we'll end up with
-    var d2 = Number(numString.substring(cutoff+1,cutoff+2));// The next decimal, after the last one we want
-    if (d2 >= 5) {// Do we need to round up at all? If not, the string will just be truncated
-      if (d1 == 9 && cutoff > 0) {// If the last digit is 9, find a new cutoff point
-        while (cutoff > 0 && (d1 == 9 || isNaN(d1))) {
-          if (d1 != ".") {
-            cutoff -= 1;
-            d1 = Number(numString.substring(cutoff,cutoff+1));
-          } else {
-            cutoff -= 1;
-          }
-        }
-      }
-      d1 += 1;
-    } 
-    if (d1 == 10) {
-      numString = numString.substring(0, numString.lastIndexOf("."));
-      var roundedNum = Number(numString) + 1;
-      newString = roundedNum.toString() + '.';
-    } else {
-      newString = numString.substring(0,cutoff) + d1.toString();
-    }
-  }
-  if (newString.lastIndexOf(".") == -1) {// Do this again, to the new string
-    newString += ".";
-  }
-  var decs = (newString.substring(newString.lastIndexOf(".")+1)).length;
-  for(var i=0;i<decimals-decs;i++) newString += "0";
-  //var newNumber = Number(newString);// make it a number if you like
-  return newString; // Output the result to the form field (change for your purposes)
-}
-
-function update_price() {
-  var row = $(this).parents('.item-row');
-  var price = row.find('.cost').val().replace("$","") * row.find('.qty').val();
-  var rate = row.find('.hidden_tax_rate').html();
-  price = roundNumber(price,2);
-  if(rate == '6' || rate == 6){
-	var gst = (price * rate)/100;
-  }else if(rate == '0' || rate == '' || rate == 0){
-	var gst = 0;
-  }
-  gst = roundNumber(gst,2);
-  var price_gst = parseFloat(price)+parseFloat(gst);
-  price_gst = roundNumber(price_gst,2);
-  isNaN(price) ? row.find('.price').html("N/A") : row.find('.price').html("$"+price);  
-  isNaN(gst) ? row.find('.gst').html("N/A") : row.find('.gst').html("$"+gst); 
-  isNaN(price_gst) ? row.find('.price_gst').html("N/A") : row.find('.price_gst').html("$"+price_gst);
-  
-  isNaN(price) ? row.find('.hidden_price').html("N/A") : row.find('.hidden_price').html(price);  
-  isNaN(gst) ? row.find('.hidden_gst').html("N/A") : row.find('.hidden_gst').html(gst); 
-  isNaN(price_gst) ? row.find('.hidden_price_gst').html("N/A") : row.find('.hidden_price_gst').html(price_gst);
-  
-  update_total();
-}
-
-function update_total() {
-  var total = 0;
-  var gsttotal = 0;
-  var gstpricetotal = 0;
-  
-  $('.price').each(function(i){
-    price = $(this).html().replace("$","");
-    if (!isNaN(price)) total += Number(price);
-  });
-  
-  $('.gst').each(function(i){
-    gst = $(this).html().replace("$","");
-    if (!isNaN(gst)) gsttotal += Number(gst);
-  });
-  
-  $('.price_gst').each(function(i){
-    price_gst = $(this).html().replace("$","");
-    if (!isNaN(price_gst)) gstpricetotal += Number(price_gst);
-  });
-
-  total = roundNumber(total,2);
-  gsttotal = roundNumber(gsttotal,2);
-  gstpricetotal = roundNumber(gstpricetotal,2);
-
-  $('#total').html("$"+total);
-  $('#gsttotal').html("$"+gsttotal);  
-  $('#gstpricetotal').html("$"+gstpricetotal);
-  $('#hidden_total').html(total);
-  $('#hidden_gsttotal').html(gsttotal);  
-  $('#hidden_gstpricetotal').html(gstpricetotal);   
-  
-}
 
 
-
-function delete_row() {
-  $(this).parents('.item-row').remove();
-    update_total();
-    if ($(".delete").length < 2) $(".delete").hide();
-}
-
-function bind() {
-  $(".cost").blur(update_price);
-  $(".qty").blur(update_price);  
-  $(".delete").click(delete_row);  
-}
-
-$(document).ready(function() {
-
-  var productList = <?php echo $productList; ?>; 
-  var serviceList = <?php echo $serviceList; ?>; 
-  var dropdownlist = "";
-  var list = "";
-  if($(".productType").val() == "p"){
-	list = productList;
-	dropdownlist += "<option value>--Select a product--</option>";
-  }else if($(".productType").val() == "s"){
-	list = serviceList;
-	dropdownlist += "<option value>--Select a service--</option>";
-  }
-  $.each( list, function( key, value ) {
-	dropdownlist += "<option value="+key+">"+value+"</option>";
-  });
-
-  $('input').click(function(){
-    $(this).select();
-  });  
-   
-  $("#addrow").click(function(){
-    $(".item-row:last").after('<tr class="item-row"><td class="item-name"><div class="delete-wpr"><a class="delete" href="javascript:;" title="Remove row">X</a><select id="" class="form-control productType" name="productType"><option value="p">Product</option><option value="s">Service</option></select></div></td><td class="description"><select class="form-control product-name" name="description[]">'+dropdownlist+'</select></td><td><textarea class="qty" placeholder="0" name="qty[]"></textarea></td><td class="code" name="code[]"><span></span></td><td><textarea class="unit" placeholder="pcs" name="unit[]"></textarea></td><td><textarea class="cost" placeholder="0.00" name="cost[]"></textarea></td><td class="price"><span>$0.00</span></td><td class="gst"><span>$0.00</span></td><td class="price_gst"><span>$0.00</span></td><td hidden><textarea name="hidden_tax_code[]" class="hidden_tax_code"></textarea></td><td hidden><textarea name="hidden_tax_rate[]" class="hidden_tax_rate"></textarea></td><td hidden><textarea name="hidden_price[]" class="hidden_price"></textarea></td><td hidden><textarea name="hidden_gst[]" class="hidden_gst"></textarea></td><td hidden><textarea name="hidden_price_gst[]" class="hidden_price_gst"></textarea></td>');
-    if ($(".delete").length > 0) $(".delete").show();
-    bind();
-  });
-  
-  bind();
-  
-  $(".delete").live('click',function(){
-    $(this).parents('.item-row').remove();
-    update_total();
-    if ($(".delete").length < 2) $(".delete").hide();
-  });
-  
-  $("#cancel-logo").click(function(){
-    $("#logo").removeClass('edit');
-  });
-  $("#delete-logo").click(function(){
-    $("#logo").remove();
-  });
-  $("#change-logo").click(function(){
-    $("#logo").addClass('edit');
-    $("#imageloc").val($("#image").attr('src'));
-    $("#image").select();
-  });
-  $("#save-logo").click(function(){
-    $("#image").attr('src',$("#imageloc").val());
-    $("#logo").removeClass('edit');
-  });
-  
-  $("#date").val(print_today());  
-});
-</script>
     <h1 style="text-align: center;">QUOTATION</h1>
 		
 		<div id="identity">
@@ -319,11 +138,12 @@ $(document).ready(function() {
 		  <tr>
 		      <th width="10%">Item</th>
 		      <th width="25%">Description</th>
-			  <th width="5%">Quantity</th>
 			  <th width="5%">Tax Code</th>
+			  <th width="5%">Tax Rate</th>
+			  <th width="5%">Quantity</th>			  
 			  <th width="5%">Units</th>
 		      <th width="10%">@ Price</th>
-			  <th width="15%">Total Excl. GST</th>
+			  <th width="10%">Total Excl. GST</th>
 		      <th width="10%">GST</th>
 		      <th width="15%">Total Incl. GST</th>
 		  </tr>
@@ -338,13 +158,15 @@ $(document).ready(function() {
 					</div>
 			  </td>
 		      <td class="description"><?php echo Html::dropDownList('description[]', null, $listData,['class' => 'form-control product-name','prompt' => '--Select a product--']);?></td>
+			  <td class="code" name="code[]"><span></span></td>
+			  <td class="rate" name="rate[]"><span></span></td>
 			  <td><textarea class="qty" placeholder="0" name="qty[]"></textarea></td>
-		      <td class="code" name="code[]"><span></span></td>
 			  <td><textarea class="unit" placeholder="pcs" name="unit[]"></textarea></td>
 			  <td><textarea class="cost" placeholder="0.00" name="cost[]"></textarea></td>
 			  <td class="price"><span>$0.00</span></td>
 			  <td class="gst"><span>$0.00</span></td>
 		      <td class="price_gst"><span>$0.00</span></td>
+			  <td hidden><textarea name="hidden_product_name[]" class="hidden_product_name"></textarea></td>
 			  <td hidden><textarea name="hidden_tax_code[]" class="hidden_tax_code"></textarea></td>
 			  <td hidden><textarea name="hidden_tax_rate[]" class="hidden_tax_rate"></textarea></td>
 			  <td hidden><textarea name="hidden_price[]" class="hidden_price"></textarea></td>
@@ -356,20 +178,22 @@ $(document).ready(function() {
 			  <td class="item-name">
 					<div class="delete-wpr">
 						<a class="delete" href="javascript:;" title="Remove row">X</a>
-						<select id="" class="form-control productType" name="productType">
+						<select id="" class="form-control productType" name="productType[]">
 							<option value="p">Product</option>
 							<option value="s">Service</option>
 						</select>
 					</div>
 			  </td>
 		      <td class="description"><?php echo Html::dropDownList('description[]', null, $listData,['class' => 'form-control product-name','prompt' => '--Select a product--']);?></td>
+			  <td class="code" name="code[]"><span></span></td>
+			  <td class="rate" name="rate[]"><span></span></td>
 			  <td><textarea class="qty" placeholder="0" name="qty[]"></textarea></td>
-		      <td class="code" name="code[]"><span></span></td>
 			  <td><textarea class="unit" placeholder="pcs" name="unit[]"></textarea></td>
 			  <td><textarea class="cost" placeholder="0.00" name="cost[]"></textarea></td>
 			  <td class="price"><span>$0.00</span></td>
 			  <td class="gst"><span>$0.00</span></td>
 		      <td class="price_gst"><span>$0.00</span></td>
+			  <td hidden><textarea name="hidden_product_name[]" class="hidden_product_name"></textarea></td>
 			  <td hidden><textarea name="hidden_tax_code[]" class="hidden_tax_code"></textarea></td>
 			  <td hidden><textarea name="hidden_tax_rate[]" class="hidden_tax_rate"></textarea></td>
 			  <td hidden><textarea name="hidden_price[]" class="hidden_price"></textarea></td>
@@ -378,12 +202,12 @@ $(document).ready(function() {
 		  </tr>
 		  
 		  <tr id="hiderow">
-		    <td colspan="9"><a id="addrow" href="javascript:;" title="Add a row">Add a row</a></td>
+		    <td colspan="10"><a id="addrow" href="javascript:;" title="Add a row">Add a row</a></td>
 		  </tr>
 		  
 		  <tr>
-		      <td colspan="2" class="blank"></td>
-		      <td colspan="4" class="total-line">Total Amount Due</td>		      
+		      <td colspan="2" rowspan="4" class="blank"><textarea name="remarks" id="remarks" placeholder="Remarks"></textarea></td>
+		      <td colspan="5" class="total-line">Total Amount</td>		      
 			  <td class="total-price"><div id="total">$0.00</div></td>
 			  <td class="total-gst"><div id="gsttotal">$0.00</div></td>
 			  <td class="total-price_gst"><div id="gstpricetotal">$0.00</div></td>
@@ -391,20 +215,16 @@ $(document).ready(function() {
 			  <td hidden><textarea name="hidden_gsttotal" id="hidden_gsttotal"></textarea></td>
 			  <td hidden><textarea name="hidden_gstpricetotal" id="hidden_gstpricetotal"></textarea></td>
 		  </tr>
-		  <tr>
-
-		      <td colspan="2" class="blank"></td>			  
-		      <td colspan="6" class="total-line"></td>
+		  <tr>			  
+		      <td colspan="7" class="total-line"></td>
 		      <td class="total-value"></td>
 		  </tr>
-		  <tr>
-		      <td colspan="2" class="blank"></td>			  
-		      <td colspan="6" class="total-line"></td>
+		  <tr>		  
+		      <td colspan="7" class="total-line"></td>
 		      <td class="total-value"></td>
 		  </tr>
-		  <tr>
-		      <td colspan="2" class="blank"></td>			  
-		      <td colspan="6" class="total-line "></td>
+		  <tr>		  
+		      <td colspan="7" class="total-line "></td>
 		      <td class="total-value "><div class="due"></div></td>
 		  </tr>
 		
@@ -469,6 +289,58 @@ $(document).ready(function() {
 		$(".productType").change(update_list);
 		$(".product-name").change(update_code);
 		$(".product-name").blur(update_rate);
+		$(".cost").blur(update_price);
+		$(".qty").blur(update_price);  
+		$(".delete").click(delete_row);
+	}
+	
+	function delete_row() {
+	  $(this).parents('.item-row').remove();
+		update_total();
+		if ($(".delete").length < 2) $(".delete").hide();
+	}
+	
+	function roundNumber(number,decimals) {
+	  var newString;// The new rounded number
+	  decimals = Number(decimals);
+	  if (decimals < 1) {
+		newString = (Math.round(number)).toString();
+	  } else {
+		var numString = number.toString();
+		if (numString.lastIndexOf(".") == -1) {// If there is no decimal point
+		  numString += ".";// give it one at the end
+		}
+		var cutoff = numString.lastIndexOf(".") + decimals;// The point at which to truncate the number
+		var d1 = Number(numString.substring(cutoff,cutoff+1));// The value of the last decimal place that we'll end up with
+		var d2 = Number(numString.substring(cutoff+1,cutoff+2));// The next decimal, after the last one we want
+		if (d2 >= 5) {// Do we need to round up at all? If not, the string will just be truncated
+		  if (d1 == 9 && cutoff > 0) {// If the last digit is 9, find a new cutoff point
+			while (cutoff > 0 && (d1 == 9 || isNaN(d1))) {
+			  if (d1 != ".") {
+				cutoff -= 1;
+				d1 = Number(numString.substring(cutoff,cutoff+1));
+			  } else {
+				cutoff -= 1;
+			  }
+			}
+		  }
+		  d1 += 1;
+		} 
+		if (d1 == 10) {
+		  numString = numString.substring(0, numString.lastIndexOf("."));
+		  var roundedNum = Number(numString) + 1;
+		  newString = roundedNum.toString() + '.';
+		} else {
+		  newString = numString.substring(0,cutoff) + d1.toString();
+		}
+	  }
+	  if (newString.lastIndexOf(".") == -1) {// Do this again, to the new string
+		newString += ".";
+	  }
+	  var decs = (newString.substring(newString.lastIndexOf(".")+1)).length;
+	  for(var i=0;i<decimals-decs;i++) newString += "0";
+	  //var newNumber = Number(newString);// make it a number if you like
+	  return newString; // Output the result to the form field (change for your purposes)
 	}
 	
 	function update_code() {
@@ -477,21 +349,162 @@ $(document).ready(function() {
 		$.get('index.php?r=quotation/get-product-detail', {productID : productID}, function(data){
 			var data = $.parseJSON(data);
 			row.find('.code').html(data.product_supply_tax);
-			row.find('.hidden_tax_code').html(data.product_supply_tax);			
-		});				
+			row.find('.hidden_tax_code').html(data.product_supply_tax);	
+			row.find('.cost').html(data.product_sellingPice);
+			row.find('.hidden_product_name').html(data.product_name);
+			if(row.find('.qty').html() == ""){
+				row.find('.qty').html(1);
+			}
+		});
 	}
 	
-	function update_rate(){
+	function update_rate(row){
 		var row = $(this).parents('.item-row');		
 		var tax_code = row.find('.code').html();
 		$.get('index.php?r=quotation/get-gst-rate', {tax_code : tax_code}, function(data){
 			var data = $.parseJSON(data);
+			row.find('.rate').html(data.tax_rate+'%');
 			row.find('.hidden_tax_rate').html(data.tax_rate);
+			update_price2(row);
 		});
+		
+	}
+	
+	function update_price() {
+	  var row = $(this).parents('.item-row');
+	  var price = row.find('.cost').val().replace("$","") * row.find('.qty').val();
+	  var rate = row.find('.hidden_tax_rate').html();
+	  price = roundNumber(price,2);
+	  if(rate == '6' || rate == 6){
+		var gst = (price * rate)/100;
+	  }else if(rate == '0' || rate == '' || rate == 0){
+		var gst = 0;
+	  }
+	  gst = roundNumber(gst,2);
+	  var price_gst = parseFloat(price)+parseFloat(gst);
+	  price_gst = roundNumber(price_gst,2);
+	  isNaN(price) ? row.find('.price').html("N/A") : row.find('.price').html("$"+price);  
+	  isNaN(gst) ? row.find('.gst').html("N/A") : row.find('.gst').html("$"+gst); 
+	  isNaN(price_gst) ? row.find('.price_gst').html("N/A") : row.find('.price_gst').html("$"+price_gst);
+	  
+	  isNaN(price) ? row.find('.hidden_price').html("N/A") : row.find('.hidden_price').html(price);  
+	  isNaN(gst) ? row.find('.hidden_gst').html("N/A") : row.find('.hidden_gst').html(gst); 
+	  isNaN(price_gst) ? row.find('.hidden_price_gst').html("N/A") : row.find('.hidden_price_gst').html(price_gst);
+	  
+	  update_total();
+	}
+	
+	function update_price2(row) {
+	  var price = row.find('.cost').val().replace("$","") * row.find('.qty').val();
+	  var rate = row.find('.hidden_tax_rate').html();
+	  price = roundNumber(price,2);
+	  if(rate == '6' || rate == 6){
+		var gst = (price * rate)/100;
+	  }else if(rate == '0' || rate == '' || rate == 0){
+		var gst = 0;
+	  }
+	  gst = roundNumber(gst,2);
+	  var price_gst = parseFloat(price)+parseFloat(gst);
+	  price_gst = roundNumber(price_gst,2);
+	  isNaN(price) ? row.find('.price').html("N/A") : row.find('.price').html("$"+price);  
+	  isNaN(gst) ? row.find('.gst').html("N/A") : row.find('.gst').html("$"+gst); 
+	  isNaN(price_gst) ? row.find('.price_gst').html("N/A") : row.find('.price_gst').html("$"+price_gst);
+	  
+	  isNaN(price) ? row.find('.hidden_price').html("N/A") : row.find('.hidden_price').html(price);  
+	  isNaN(gst) ? row.find('.hidden_gst').html("N/A") : row.find('.hidden_gst').html(gst); 
+	  isNaN(price_gst) ? row.find('.hidden_price_gst').html("N/A") : row.find('.hidden_price_gst').html(price_gst);
+	  
+	  update_total();
+	}
+	
+	function update_total() {
+	  var total = 0;
+	  var gsttotal = 0;
+	  var gstpricetotal = 0;
+	  
+	  $('.price').each(function(i){
+		price = $(this).html().replace("$","");
+		if (!isNaN(price)) total += Number(price);
+	  });
+	  
+	  $('.gst').each(function(i){
+		gst = $(this).html().replace("$","");
+		if (!isNaN(gst)) gsttotal += Number(gst);
+	  });
+	  
+	  $('.price_gst').each(function(i){
+		price_gst = $(this).html().replace("$","");
+		if (!isNaN(price_gst)) gstpricetotal += Number(price_gst);
+	  });
+
+	  total = roundNumber(total,2);
+	  gsttotal = roundNumber(gsttotal,2);
+	  gstpricetotal = roundNumber(gstpricetotal,2);
+
+	  $('#total').html("$"+total);
+	  $('#gsttotal').html("$"+gsttotal);  
+	  $('#gstpricetotal').html("$"+gstpricetotal);
+	  $('#hidden_total').html(total);
+	  $('#hidden_gsttotal').html(gsttotal);  
+	  $('#hidden_gstpricetotal').html(gstpricetotal);   
+	  
 	}
 
 	$("#addrow").click(function(){
 		bind();
+	});
+	
+	$(document).ready(function() {
+
+	  var productList = $productList; 
+	  var serviceList = $serviceList; 
+	  var dropdownlist = "";
+	  var list = "";
+	  if($(".productType").val() == "p"){
+		list = productList;
+		dropdownlist += "<option value>--Select a product--</option>";
+	  }else if($(".productType").val() == "s"){
+		list = serviceList;
+		dropdownlist += "<option value>--Select a service--</option>";
+	  }
+	  $.each( list, function( key, value ) {
+		dropdownlist += "<option value="+key+">"+value+"</option>";
+	  });
+
+	  $('input').click(function(){
+		$(this).select();
+	  });  
+	   
+	  $("#addrow").click(function(){
+		$(".item-row:last").after('<tr class="item-row"><td class="item-name"><div class="delete-wpr"><a class="delete" href="javascript:;" title="Remove row">X</a><select id="" class="form-control productType" name="productType"><option value="p">Product</option><option value="s">Service</option></select></div></td><td class="description"><select class="form-control product-name" name="description[]">'+dropdownlist+'</select></td><td class="code" name="code[]"><span></span></td><td class="rate" name="rate[]"><span></span></td><td><textarea class="qty" placeholder="0" name="qty[]"></textarea></td><td><textarea class="unit" placeholder="pcs" name="unit[]"></textarea></td><td><textarea class="cost" placeholder="0.00" name="cost[]"></textarea></td><td class="price"><span>$0.00</span></td><td class="gst"><span>$0.00</span></td><td class="price_gst"><span>$0.00</span></td><td hidden><textarea name="hidden_product_name[]" class="hidden_product_name"></textarea></td><td hidden><textarea name="hidden_tax_code[]" class="hidden_tax_code"></textarea></td><td hidden><textarea name="hidden_tax_rate[]" class="hidden_tax_rate"></textarea></td><td hidden><textarea name="hidden_price[]" class="hidden_price"></textarea></td><td hidden><textarea name="hidden_gst[]" class="hidden_gst"></textarea></td><td hidden><textarea name="hidden_price_gst[]" class="hidden_price_gst"></textarea></td>');
+		if ($(".delete").length > 0) $(".delete").show();
+		bind();
+	  });
+	  
+	  bind();
+	  
+	  $(".delete").live('click',function(){
+		$(this).parents('.item-row').remove();
+		update_total();
+		if ($(".delete").length < 2) $(".delete").hide();
+	  });
+	  
+	  $("#cancel-logo").click(function(){
+		$("#logo").removeClass('edit');
+	  });
+	  $("#delete-logo").click(function(){
+		$("#logo").remove();
+	  });
+	  $("#change-logo").click(function(){
+		$("#logo").addClass('edit');
+		$("#imageloc").val($("#image").attr('src'));
+		$("#image").select();
+	  });
+	  $("#save-logo").click(function(){
+		$("#image").attr('src',$("#imageloc").val());
+		$("#logo").removeClass('edit');
+	  });
+	  
 	});
 		
 JS;

@@ -10,6 +10,24 @@ use yii\bootstrap\Tabs;
 
 $this->title = 'Taxes';
 $this->params['breadcrumbs'][] = $this->title;
+
+if($accessView != NULL){
+	$view = '{view}';
+}else{
+	$view = '';
+}
+
+if($accessUpdate != NULL){
+	$update = '{update}';
+}else{
+	$update = '';
+}
+
+if($accessDelete != NULL){
+	$delete = '{delete}';
+}else{
+	$delete = '';
+}
 ?>
 <div class="tax-index">
 
@@ -17,7 +35,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?= Html::a('Create Tax', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= $accessCreate != NULL ? Html::a('Create Tax', ['create'], ['class' => 'btn btn-success']): ''; ?>
     </p>
 	
 	<?php echo Tabs::widget([
@@ -54,7 +72,19 @@ $this->params['breadcrumbs'][] = $this->title;
 
             
 
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+				'class' => 'yii\grid\ActionColumn',	
+				'template' => $view . ' ' . $update . ' '. $delete,				
+				'buttons' => [
+				//view button
+				'view' => function ($url, $model) {
+					return Html::a('<span class="fa fa-search"></span>View', $url, [
+						'title' => Yii::t('app', 'View'),
+						'class'=>'btn btn-primary btn-xs',                                  
+						]);
+					},
+				],
+			],
         ],
     ]); ?>
 

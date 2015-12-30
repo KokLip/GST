@@ -195,6 +195,29 @@ use yii\helpers\ArrayHelper;
 			</ul>
 		</li>
 		<li>	
+			<input type="checkbox" name="Access2[permission][]" value="35" class="module_checkboxes " <?php checked(35, $accessid); ?>>	
+			<span class="text-success">Purchase Order:</span>
+			<span class="text-warning">View, Create, Update and Delete</span>
+			<ul>
+				<li>
+					<input type="checkbox" name="Access2[permission][]" value="36" <?php checked(36, $accessid); ?>>		
+					<span class="text-info">View</span>
+				</li>
+				<li>
+					<input type="checkbox" name="Access2[permission][]" value="37" <?php checked(37, $accessid); ?>>		
+					<span class="text-info">Create</span>
+				</li>
+				<li>
+					<input type="checkbox" name="Access2[permission][]" value="38" <?php checked(38, $accessid); ?>>			
+					<span class="text-info">Update</span>
+				</li>
+				<li>
+					<input type="checkbox" name="Access2[permission][]" value="39" <?php checked(39, $accessid); ?>>		
+					<span class="text-info">Delete</span>
+				</li>
+			</ul>
+		</li>
+		<li>	
 			<input type="checkbox" name="Access2[permission][]" value="23" class="module_checkboxes " <?php checked(23, $accessid); ?>>	
 			<span class="text-success">Access Control:</span>
 			<span class="text-warning">Update</span>

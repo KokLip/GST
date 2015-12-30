@@ -1,16 +1,14 @@
 <?php
 
 use yii\helpers\Html;
-use yii\widgets\DetailView;
+use yii\widgets\ActiveForm;
 use yii\helpers\ArrayHelper;
 use dosamigos\datepicker\DatePicker;
 /* @var $this yii\web\View */
 /* @var $model app\models\Quotation */
-
-$this->title = $model->quotation_no;
-$this->params['breadcrumbs'][] = ['label' => 'Quotations', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
+/* @var $form yii\widgets\ActiveForm */
 ?>
+
 <link rel='stylesheet' type='text/css' href='css/style.css' />
 <link rel='stylesheet' type='text/css' href='css/print.css' media="print" />
 <script type='text/javascript' src='js/jquery-1.3.2.min.js'></script>
@@ -26,21 +24,8 @@ function CallPrint(strid) {
 }
 </script>
 
-<div class="quotation-view">
+<div class="quotation-form">	
 
-	<h1><?= Html::encode($this->title) ?></h1>
-	<p>
-		<?= Html::a('Print', '#', ['class' => 'btn btn-info', 'onclick' => "javascript:CallPrint('print-all1')"]) ?>
-        <?= Html::a('Update', ['update', 'id' => $model->quotation_id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->quotation_id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
-    </p>
-	
     <h1 style="text-align: center;">QUOTATION</h1>
 		
 		<div id="identity">			            
@@ -52,7 +37,7 @@ function CallPrint(strid) {
 								<td><font style="font-size:18px;font-family:verdana;color:#3c3c3c;">To</font></td>					
 							</tr>
 							<tr>
-								<td><textarea id="customer-list" type="text" class="form-control customer-list" name="customer-list" readonly><?php echo $thisCustomer->customer_name;?></textarea></td>
+								<td><input id="customer-list" type="text" class="form-control customer-list" name="customer-list" value=<?php echo $thisCustomer->customer_name;?> readonly></td>
 							</tr>
 							<tr>
 								<td><textarea id="address" name="customer_address" class="form-control" readonly><?php echo $thisCustomer->customer_add1; ?></textarea></td>					
@@ -65,12 +50,23 @@ function CallPrint(strid) {
 					<td>
 						<table id="meta">
 							<tr>
-								<td class="meta-head" width="25%">Quotation #</td>
-								<td><textarea class="form-control" name="quotation_no" width="75%" readonly><?php echo $model->quotation_no; ?></textarea></td>
+								<td class="meta-head">Quotation #</td>
+								<td><textarea class="form-control" name="quotation_no" readonly><?php echo $model->quotation_no; ?></textarea></td>
+								<td hidden><textarea class="form-control" name="quotation_id"><?php echo $model->quotation_id; ?></textarea></td>
 							</tr>
 							<tr>
 								<td class="meta-head">Date</td>
-								<td><textarea class="form-control" name="quotation_date" readonly><?php echo $model->quotation_date; ?></textarea></td>
+								<td><?= DatePicker::widget([
+										'model' => $model,						
+										'attribute' => 'quotation_date',
+										'template' => '{addon}{input}',							
+											'clientOptions' => [								
+												'autoclose' => true,
+												'format' => 'yyyy-mm-dd',
+											],
+											'options' => ['class' => 'form-date', 'name' => 'quotation_date'],
+									]);?>
+								</td>
 							</tr>
 							<tr>
 								<td class="meta-head">Amount Due</td>
@@ -120,13 +116,13 @@ function CallPrint(strid) {
 			
 		<table id="items">		
 		  <tr>
-		      <th width="35%">Description</th>
+		      <th width="40%">Description</th>
 			  <th width="5%">Tax Code</th>
 			  <th width="5%">Tax Rate</th>
 			  <th width="5%">Quantity</th>			  
 			  <th width="5%">Units</th>
 		      <th width="10%">@ Price</th>
-			  <th width="10%">Total Excl. GST</th>
+			  <th width="15%">Total Excl. GST</th>
 		      <th width="10%">GST</th>
 		      <th width="15%">Total Incl. GST</th>
 		  </tr>
@@ -146,7 +142,7 @@ function CallPrint(strid) {
 		  <?php } ?>
 		  		  
 		  <tr>
-		      <td colspan="1" class="blank"></td>
+		      <td colspan="2" class="blank"></td>
 		      <td colspan="5" class="total-line">Total Amount</td>		      
 			  <td class="total-price"><div id="total">$<?php echo $model->quotation_parts_total; ?></div></td>
 			  <td class="total-gst"><div id="gsttotal">$<?php echo $model->quotation_gst_payable; ?></div></td>
@@ -154,17 +150,17 @@ function CallPrint(strid) {
 		  </tr>
 		  <tr>
 
-		      <td colspan="1" class="blank"></td>			  
+		      <td colspan="2" class="blank"></td>			  
 		      <td colspan="7" class="total-line"></td>
 		      <td class="total-value"></td>
 		  </tr>
 		  <tr>
-		      <td colspan="1" class="blank"></td>			  
+		      <td colspan="2" class="blank"></td>			  
 		      <td colspan="7" class="total-line"></td>
 		      <td class="total-value"></td>
 		  </tr>
 		  <tr>
-		      <td colspan="1" class="blank"></td>			  
+		      <td colspan="2" class="blank"></td>			  
 		      <td colspan="7" class="total-line "></td>
 		      <td class="total-value "><div class="due"></div></td>
 		  </tr>
@@ -176,6 +172,7 @@ function CallPrint(strid) {
 		  <textarea>NET 30 Days. Finance Charge of 1.5% will be made on unpaid balances after 30 days.</textarea>
 		</div>
 
+	<a href="#" onclick="javascript:CallPrint('print-all1')"><span>print</span></a>
 	<div class="visible-print" id="print-all1">
 		<table width="100%">
 			<tr>
@@ -318,5 +315,20 @@ function CallPrint(strid) {
 			</tr>
 		</table>
 	</div>
-
 </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

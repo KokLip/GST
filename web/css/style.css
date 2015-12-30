@@ -44,6 +44,7 @@ table td, table th { border: 1px solid #eaedee;padding: 5px; }
 #items th { background: #54A0E7; border: 0px;}
 #items th { color:#FFFFFD; }
 #items textarea { width: 80px; height: 50px; }
+.qty, .unit{ width: 50px !important;}
 #items select { width:100%; border: 0px;padding: 5px;font: 14px Georgia, Serif;font-size: 13px;color: #3c3c3c;border-radius: 0px; }
 #items tr.item-row td { vertical-align: top; }
 #items td.description { width: 300px; }
@@ -63,3 +64,6 @@ table td, table th { border: 1px solid #eaedee;padding: 5px; }
 
 .delete-wpr { position: relative; }
 .delete { display: block; color: #000; text-decoration: none; position: absolute; background: #EEEEEE; font-weight: bold; padding: 0px 3px; border: 1px solid; top: -6px; left: -22px; font-family: Verdana; font-size: 12px; }
+textarea:read-only { background-color: white !important; }
+input:read-only { background-color: white !important; }
+#remarks { width:100% !important; height:100px !important; }

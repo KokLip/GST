@@ -4,9 +4,21 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\helpers\ArrayHelper;
 use dosamigos\datepicker\DatePicker;
+
 /* @var $this yii\web\View */
-/* @var $model app\models\Quotation */
+/* @var $model app\models\PurchaseOrder */
 /* @var $form yii\widgets\ActiveForm */
+?>
+
+<?php
+if($po != NULL){ 
+	$lstpo = $po->purchaseorder_id;
+	$po_id = $lstpo + 1;
+	$po_no = 1000 +  $po_id;
+}else{
+	$po_id = 1;
+	$po_no = 1001;
+}
 ?>
 
 <link rel='stylesheet' type='text/css' href='css/style.css' />
@@ -31,21 +43,12 @@ use dosamigos\datepicker\DatePicker;
 	<?php $listData3=ArrayHelper::map($customer,'customer_id','customer_name');
 		$customerList = json_encode($listData3);
 	?>
-	
-<script>
-function CallPrint(strid) {
-	var prtContent = document.getElementById(strid);
-	var WinPrint = window.open('', '', 'letf=0,top=0,width=400,height=400,toolbar=0,scrollbars=0,status=0');
-	WinPrint.document.write(prtContent.innerHTML);
-	WinPrint.document.close();
-	WinPrint.focus();
-	WinPrint.print();
-}
-</script>
-    <h1 style="text-align: center;">QUOTATION</h1>
+	<?php $model->purchaseorder_date =  date('Y-m-d');?>
+
+    <h1 style="text-align: center;">Purchase Order</h1>
 		
-		<div id="identity">			            
-            <table class="top" width="100%">
+		<div id="identity">
+			<table class="top" width="100%">
 				<tr>
 					<td>
 						<table class="info">
@@ -53,34 +56,34 @@ function CallPrint(strid) {
 								<td><font style="font-size:18px;font-family:verdana;color:#3c3c3c;">To</font></td>					
 							</tr>
 							<tr>
-								<td><?php echo Html::dropDownList('customer-list', $thisCustomer->customer_id, $listData3,['id' => 'customer', 'class' => 'form-control','prompt' => '--Select a customer--']);?></td>					
+								<td><?php echo Html::dropDownList('customer-list', null, $listData3,['id' => 'customer', 'class' => 'form-control','prompt' => '--Select a customer--']);?></td>					
 							</tr>
 							<tr>
-								<td><textarea id="address" name="customer_address" class="form-control"><?php echo $thisCustomer->customer_add1; ?></textarea></td>					
+								<td><textarea id="address" name="customer_address" class="form-control" placeholder="Address"></textarea></td>					
 							</tr>
 							<tr>
-								<td><input id="postcode" type="text" class="form-control poscode" name="poscode" value=<?php echo $thisCustomer->customer_poscode;?>></td>
+								<td><input id="postcode" type="text" class="form-control poscode" name="poscode" placeholder="Poscode"></td>
 							</tr>
 						</table>            
 					</td>
 					<td>
 						<table id="meta">
 							<tr>
-								<td class="meta-head">Quotation #</td>
-								<td><textarea class="form-control" name="quotation_no"><?php echo $model->quotation_no; ?></textarea></td>
-								<td hidden><textarea class="form-control" name="quotation_id"><?php echo $model->quotation_id; ?></textarea></td>
+								<td class="meta-head">Purchase Order #</td>
+								<td><textarea class="form-control" name="po_no"><?php echo $po_no ?></textarea></td>
+								<td hidden><textarea class="form-control" name="po_id"><?php echo $po_id ?></textarea></td>
 							</tr>
 							<tr>
 								<td class="meta-head">Date</td>
 								<td><?= DatePicker::widget([
 										'model' => $model,						
-										'attribute' => 'quotation_date',
+										'attribute' => 'purchaseorder_date',
 										'template' => '{addon}{input}',							
 											'clientOptions' => [								
 												'autoclose' => true,
 												'format' => 'yyyy-mm-dd',
 											],
-											'options' => ['class' => 'form-date', 'name' => 'quotation_date'],
+											'options' => ['class' => 'form-date', 'name' => 'po_date'],
 									]);?>
 								</td>
 							</tr>
@@ -88,10 +91,11 @@ function CallPrint(strid) {
 								<td class="meta-head">Amount Due</td>
 								<td><div class="due">$0.00</div></td>
 							</tr>
+
 						</table>
 					</td>
 				</tr>
-			</table>		
+			</table>
 		</div>
 		
 		<div style="clear:both"></br></div>
@@ -104,7 +108,7 @@ function CallPrint(strid) {
 							<tr>
 								<td><span>TEL </span></td>
 								<td><span> :</span></td>
-								<td><input id="tel" type="text" class="form-control" name="tel" value=<?php echo $thisCustomer->customer_tel;?>></td>
+								<td><input id="tel" type="text" class="form-control" name="tel"></td>
 							</tr>								
 						</table>
 					</td>
@@ -113,7 +117,7 @@ function CallPrint(strid) {
 							<tr>
 								<td><span>FAX </span></td>
 								<td><span> :</span></td>
-								<td><input id="fax" type="text" class="form-control" name="fax" value=<?php echo $thisCustomer->customer_fax;?>></td>
+								<td><input id="fax" type="text" class="form-control" name="fax"></td>
 							</tr>
 						</table>
 					</td>
@@ -122,14 +126,14 @@ function CallPrint(strid) {
 							<tr>
 								<td><span>EMAIL </span></td>
 								<td><span> :</span></td>
-								<td><input id="email" type="text" class="form-control" name="email" value=<?php echo $thisCustomer->customer_email;?>></td>
+								<td><input id="email" type="text" class="form-control email" name="email"></td>
 							</tr>
 						</table>
 					</td>
 				</tr>
 			</table>        		
 		</div>
-			
+		
 		<table id="items">		
 		  <tr>
 		      <th width="10%">Item</th>
@@ -143,70 +147,87 @@ function CallPrint(strid) {
 		      <th width="10%">GST</th>
 		      <th width="15%">Total Incl. GST</th>
 		  </tr>
-		  <?php foreach($quotationDetails as $quotationDetail){ ?>
-		  <?php 
-			if($quotationDetail->quotationdetail_producttype == 'p'){
-				$thisList = $listData;
-				$serviceSelect = "";
-			}elseif($quotationDetail->quotationdetail_producttype == 's'){
-				$thisList = $listData2;
-				$serviceSelect = "selected";
-			}
-		  ?>
-			  <tr class="item-row">
-				  <td class="item-name">
-						<div class="delete-wpr">
-							<a class="delete" href="javascript:;" title="Remove row">X</a>
-							<select id="" class="form-control productType" name="productType[]">
-								<option value="p">Product</option>
-								<option value="s" <?php echo $serviceSelect; ?>>Service</option>
-							</select>
-						</div>
-				  </td>
-				  <td class="description"><?php echo Html::dropDownList('description[]', $quotationDetail->quotationdetail_productid, $thisList,['class' => 'form-control product-name','prompt' => '--Select a product--']);?></td>
-				  <td class="code" name="code[]"><span><?php echo $quotationDetail->quotationdetail_tax_code; ?></span></td>
-				  <td class="rate" name="rate[]"><span><?php echo $quotationDetail->quotationdetail_tax_rate; ?>%</span></td>
-				  <td><textarea class="qty" placeholder="0" name="qty[]"><?php echo $quotationDetail->quotationdetail_unit; ?></textarea></td>				  
-				  <td><textarea class="unit" placeholder="pcs" name="unit[]"><?php echo $quotationDetail->quotationdetail_unitname; ?></textarea></td>
-				  <td><textarea class="cost" placeholder="0.00" name="cost[]"><?php echo $quotationDetail->quotationdetail_product_cost; ?></textarea></td>
-				  <td class="price">$<?php echo $quotationDetail->quotationdetail_price; ?></td>
-				  <td class="gst">$<?php echo $quotationDetail->quotationdetail_tax_amount; ?></td>
-				  <td class="price_gst">$<?php echo $quotationDetail->quotationdetail_total_amount; ?></td>
-				  <td hidden><textarea name="hidden_product_name[]" class="hidden_product_name"><?php echo $quotationDetail->quotationdetail_productname; ?></textarea></td>
-				  <td hidden><textarea name="hidden_tax_code[]" class="hidden_tax_code"><?php echo $quotationDetail->quotationdetail_tax_code; ?></textarea></td>
-				  <td hidden><textarea name="hidden_tax_rate[]" class="hidden_tax_rate"><?php echo $quotationDetail->quotationdetail_tax_rate; ?></textarea></td>			  
-				  <td hidden><textarea name="hidden_price[]" class="hidden_price"><?php echo $quotationDetail->quotationdetail_price; ?></textarea></td>
-				  <td hidden><textarea name="hidden_gst[]" class="hidden_gst"><?php echo $quotationDetail->quotationdetail_tax_amount; ?></textarea></td>
-				  <td hidden><textarea name="hidden_price_gst[]" class="hidden_price_gst"><?php echo $quotationDetail->quotationdetail_total_amount; ?></textarea></td>
-				  <td hidden><textarea name="hidden_id[]" class="hidden_id"><?php echo $quotationDetail->quotationdetail_id; ?></textarea></td>
-				  <td hidden><textarea name="hidden_quotationid[]" class="hidden_quotationid"><?php echo $quotationDetail->quotationdetail_id; ?></textarea></td>
-			  </tr>
+		  <tr class="item-row">
+		      <td class="item-name">
+					<div class="delete-wpr">
+						<a class="delete" href="javascript:;" title="Remove row">X</a>
+						<select id="" class="form-control productType" name="productType[]">
+							<option value="p">Product</option>
+							<option value="s">Service</option>
+						</select>
+					</div>
+			  </td>
+		      <td class="description"><?php echo Html::dropDownList('description[]', null, $listData,['class' => 'form-control product-name','prompt' => '--Select a product--']);?></td>
+			  <td class="code" name="code[]"><span></span></td>
+			  <td class="rate" name="rate[]"><span></span></td>
+			  <td><textarea class="qty" placeholder="0" name="qty[]"></textarea></td>
+			  <td><textarea class="unit" placeholder="pcs" name="unit[]"></textarea></td>
+			  <td><textarea class="cost" placeholder="0.00" name="cost[]"></textarea></td>
+			  <td class="price"><span>$0.00</span></td>
+			  <td class="gst"><span>$0.00</span></td>
+		      <td class="price_gst"><span>$0.00</span></td>
+			  <td hidden><textarea name="hidden_product_name[]" class="hidden_product_name"></textarea></td>
+			  <td hidden><textarea name="hidden_tax_code[]" class="hidden_tax_code"></textarea></td>
+			  <td hidden><textarea name="hidden_tax_rate[]" class="hidden_tax_rate"></textarea></td>
+			  <td hidden><textarea name="hidden_price[]" class="hidden_price"></textarea></td>
+			  <td hidden><textarea name="hidden_gst[]" class="hidden_gst"></textarea></td>
+			  <td hidden><textarea name="hidden_price_gst[]" class="hidden_price_gst"></textarea></td>
+		  </tr>
 		  
-		  <?php } ?>
+		  <tr class="item-row">
+			  <td class="item-name">
+					<div class="delete-wpr">
+						<a class="delete" href="javascript:;" title="Remove row">X</a>
+						<select id="" class="form-control productType" name="productType">
+							<option value="p">Product</option>
+							<option value="s">Service</option>
+						</select>
+					</div>
+			  </td>
+		      <td class="description"><?php echo Html::dropDownList('description[]', null, $listData,['class' => 'form-control product-name','prompt' => '--Select a product--']);?></td>
+			  <td class="code" name="code[]"><span></span></td>
+			  <td class="rate" name="rate[]"><span></span></td>
+			  <td><textarea class="qty" placeholder="0" name="qty[]"></textarea></td>
+			  <td><textarea class="unit" placeholder="pcs" name="unit[]"></textarea></td>
+			  <td><textarea class="cost" placeholder="0.00" name="cost[]"></textarea></td>
+			  <td class="price"><span>$0.00</span></td>
+			  <td class="gst"><span>$0.00</span></td>
+		      <td class="price_gst"><span>$0.00</span></td>
+			  <td hidden><textarea name="hidden_product_name[]" class="hidden_product_name"></textarea></td>
+			  <td hidden><textarea name="hidden_tax_code[]" class="hidden_tax_code"></textarea></td>
+			  <td hidden><textarea name="hidden_tax_rate[]" class="hidden_tax_rate"></textarea></td>
+			  <td hidden><textarea name="hidden_price[]" class="hidden_price"></textarea></td>
+			  <td hidden><textarea name="hidden_gst[]" class="hidden_gst"></textarea></td>
+			  <td hidden><textarea name="hidden_price_gst[]" class="hidden_price_gst"></textarea></td>
+		  </tr>
 		  
 		  <tr id="hiderow">
 		    <td colspan="9"><a id="addrow" href="javascript:;" title="Add a row">Add a row</a></td>
 		  </tr>
 		  
 		  <tr>
-		      <td colspan="2" rowspan="4" class="blank"><textarea name="remarks" id="remarks" placeholder="Remarks"></textarea></td>
+		      <td colspan="2" class="blank"></td>
 		      <td colspan="5" class="total-line">Total Amount</td>		      
-			  <td class="total-price"><div id="total">$<?php echo $model->quotation_parts_total; ?></div></td>
-			  <td class="total-gst"><div id="gsttotal">$<?php echo $model->quotation_gst_payable; ?></div></td>
-			  <td class="total-price_gst"><div id="gstpricetotal">$<?php echo $model->quotation_total_amount; ?></div></td>
+			  <td class="total-price"><div id="total">$0.00</div></td>
+			  <td class="total-gst"><div id="gsttotal">$0.00</div></td>
+			  <td class="total-price_gst"><div id="gstpricetotal">$0.00</div></td>
 			  <td hidden><textarea name="hidden_total" id="hidden_total"></textarea></td>
 			  <td hidden><textarea name="hidden_gsttotal" id="hidden_gsttotal"></textarea></td>
 			  <td hidden><textarea name="hidden_gstpricetotal" id="hidden_gstpricetotal"></textarea></td>
 		  </tr>
-		  <tr>			  
+		  <tr>
+
+		      <td colspan="2" class="blank"></td>			  
 		      <td colspan="7" class="total-line"></td>
 		      <td class="total-value"></td>
 		  </tr>
-		  <tr>  
+		  <tr>
+		      <td colspan="2" class="blank"></td>			  
 		      <td colspan="7" class="total-line"></td>
 		      <td class="total-value"></td>
 		  </tr>
-		  <tr>			  
+		  <tr>
+		      <td colspan="2" class="blank"></td>			  
 		      <td colspan="7" class="total-line "></td>
 		      <td class="total-value "><div class="due"></div></td>
 		  </tr>
@@ -221,9 +242,8 @@ function CallPrint(strid) {
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
     </div>
-
-    <?php ActiveForm::end(); ?>
 	
+    <?php ActiveForm::end(); ?>
 	
 	<?php
 	$script = <<< JS
@@ -460,7 +480,7 @@ function CallPrint(strid) {
 	  });  
 	   
 	  $("#addrow").click(function(){
-		$(".item-row:last").after('<tr class="item-row"><td class="item-name"><div class="delete-wpr"><a class="delete" href="javascript:;" title="Remove row">X</a><select id="" class="form-control productType" name="productType[]"><option value="p">Product</option><option value="s">Service</option></select></div></td><td class="description"><select class="form-control product-name" name="description[]">'+dropdownlist+'</select></td><td class="code" name="code[]"><span></span></td><td class="rate" name="rate[]"><span></span></td><td><textarea class="qty" placeholder="0" name="qty[]"></textarea></td><td><textarea class="unit" placeholder="pcs" name="unit[]"></textarea></td><td><textarea class="cost" placeholder="0.00" name="cost[]"></textarea></td><td class="price"><span>$0.00</span></td><td class="gst"><span>$0.00</span></td><td class="price_gst"><span>$0.00</span></td><td hidden><textarea name="hidden_product_name[]" class="hidden_product_name"></textarea></td><td hidden><textarea name="hidden_tax_code[]" class="hidden_tax_code"></textarea></td><td hidden><textarea name="hidden_tax_rate[]" class="hidden_tax_rate"></textarea></td><td hidden><textarea name="hidden_price[]" class="hidden_price"></textarea></td><td hidden><textarea name="hidden_gst[]" class="hidden_gst"></textarea></td><td hidden><textarea name="hidden_price_gst[]" class="hidden_price_gst"></textarea></td><td hidden><textarea name="hidden_id[]" class="hidden_id"></textarea></td><td hidden><textarea name="hidden_quotationid[]" class="hidden_quotationid"></textarea></td>');
+		$(".item-row:last").after('<tr class="item-row"><td class="item-name"><div class="delete-wpr"><a class="delete" href="javascript:;" title="Remove row">X</a><select id="" class="form-control productType" name="productType"><option value="p">Product</option><option value="s">Service</option></select></div></td><td class="description"><select class="form-control product-name" name="description[]">'+dropdownlist+'</select></td><td class="code" name="code[]"><span></span></td><td class="rate" name="rate[]"><span></span></td><td><textarea class="qty" placeholder="0" name="qty[]"></textarea></td><td><textarea class="unit" placeholder="pcs" name="unit[]"></textarea></td><td><textarea class="cost" placeholder="0.00" name="cost[]"></textarea></td><td class="price"><span>$0.00</span></td><td class="gst"><span>$0.00</span></td><td class="price_gst"><span>$0.00</span></td><td hidden><textarea name="hidden_product_name[]" class="hidden_product_name"></textarea></td><td hidden><textarea name="hidden_tax_code[]" class="hidden_tax_code"></textarea></td><td hidden><textarea name="hidden_tax_rate[]" class="hidden_tax_rate"></textarea></td><td hidden><textarea name="hidden_price[]" class="hidden_price"></textarea></td><td hidden><textarea name="hidden_gst[]" class="hidden_gst"></textarea></td><td hidden><textarea name="hidden_price_gst[]" class="hidden_price_gst"></textarea></td>');
 		if ($(".delete").length > 0) $(".delete").show();
 		bind();
 	  });
@@ -497,19 +517,3 @@ JS;
 	?>
 
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -12,7 +12,9 @@ use app\models\Company;
 use app\models\Tax;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
+use app\models\Access2;
 use yii\helpers\Json;
 
 /**
@@ -22,7 +24,57 @@ class QuotationController extends Controller
 {
     public function behaviors()
     {
+		$index = '';
+		$view = '';
+		$update = '';
+		$create = '';
+		$delete = '';
+		
+		if(!(Yii::$app->user->isGuest)){
+			$uid = Yii::$app->user->identity->user_id;
+			$accessIndex = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 30])->one();
+			$accessView = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 31])->one();
+			$accessCreate = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 32])->one();
+			$accessUpdate = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 33])->one();
+			$accessDelete = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 34])->one();
+			
+			if($accessIndex != NULL){
+				$index = 'index';
+			}
+					
+			if($accessView != NULL){
+				$view = 'view';
+			}
+			
+			if($accessUpdate != NULL){
+				$update = 'update';
+			}
+			
+			if($accessCreate != NULL){
+				$create = 'create';
+			}
+			
+			if($accessDelete != NULL){
+				$delete = 'delete';
+			}
+		}
+		
         return [
+			'access' => [
+                'class' => AccessControl::className(),
+                'only' => ['index', 'view', 'create', 'update', 'delete'],
+                'rules' => [
+                    [
+                        'allow' => false,
+                        'roles' => ['?'],
+                    ],	
+					[
+                        'allow' => true,
+						'actions' => [$index, $view, $create, $update, $delete],
+                        'roles' => ['@'],
+                    ],					
+                ],
+            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
@@ -40,10 +92,19 @@ class QuotationController extends Controller
     {
         $searchModel = new QuotationSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+		$uid = Yii::$app->user->identity->user_id;
+		$accessView = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 31])->one();
+		$accessCreate = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 32])->one();
+		$accessUpdate = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 33])->one();
+		$accessDelete = Access2::find()->where(['user_id' => $uid, 'sub_module_id' => 34])->one();
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+			'accessView' => $accessView,
+			'accessCreate' => $accessCreate,
+			'accessUpdate' => $accessUpdate,
+			'accessDelete' => $accessDelete,
         ]);
     }
 
@@ -54,8 +115,17 @@ class QuotationController extends Controller
      */
     public function actionView($id)
     {
+	    $model = $this->findModel($id);
+		$quotationDetails = QuotationDetail::find()->where(['quotationdetail_quotationid' => $id])->orderBy('quotationdetail_id')->all();
+		$company = Company::findOne(1);		
+		$customerID = $model->quotation_customerid;
+		$thisCustomer = Customer::findOne($customerID);
+		
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'model' => $model,
+			'quotationDetails' => $quotationDetails,			
+			'thisCustomer' => $thisCustomer,
+			'company' => $company,
         ]);
     }
 
@@ -86,6 +156,7 @@ class QuotationController extends Controller
 			$qty = $_POST['qty'];
 			$unit = $_POST['unit'];
 			$cost = $_POST['cost'];
+			$remarks = $_POST['remarks'];
 			$hidden_price = $_POST['hidden_price'];
 			$hidden_gst = $_POST['hidden_gst'];
 			$hidden_tax_code = $_POST['hidden_tax_code'];
@@ -94,8 +165,12 @@ class QuotationController extends Controller
 			$hidden_total = $_POST['hidden_total'];
 			$hidden_gsttotal = $_POST['hidden_gsttotal'];
 			$hidden_gstpricetotal = $_POST['hidden_gstpricetotal'];
+			$hidden_product_name = $_POST['hidden_product_name'];
 			
 			if($quotationDetailList != NULL){
+				if($remarks == NULL){
+					$remarks = "-";
+				}
 				$newQuotation = new Quotation();
 				$newQuotation->quotation_id = $quotation_id;
 				$newQuotation->quotation_no = $quotation_no;
@@ -104,7 +179,7 @@ class QuotationController extends Controller
 				$newQuotation->quotation_customerid = $customer_id;
 				$newQuotation->quotation_createid = $uid;
 				$newQuotation->quotation_createname = $uname;
-				$newQuotation->quotation_remark = "lol";
+				$newQuotation->quotation_remark = $remarks;
 				$newQuotation->quotation_system = "y";
 				$newQuotation->quotation_partno = "y";
 				
@@ -124,22 +199,28 @@ class QuotationController extends Controller
 				
 				
 				$newQuotation->save();
-				foreach($quotationDetailList as $key => $n ){					
-					$newQuotationDetail = new QuotationDetail();
-					$newQuotationDetail->quotationdetail_quotationid = $quotation_id;
-					$newQuotationDetail->quotationdetail_productid = $n;
-					$newQuotationDetail->quotationdetail_partno = "lol";
-					$newQuotationDetail->quotationdetail_productname = "lol";
-					$newQuotationDetail->quotationdetail_unit = $qty[$key];
-					$newQuotationDetail->quotationdetail_unitname = $unit[$key];
-					$newQuotationDetail->quotationdetail_product_cost = $cost[$key];
-					$newQuotationDetail->quotationdetail_price = $hidden_price[$key];
-					$newQuotationDetail->quotationdetail_tax_code = $hidden_tax_code[$key];
-					$newQuotationDetail->quotationdetail_tax_rate = $hidden_tax_rate[$key];
-					$newQuotationDetail->quotationdetail_tax_amount = $hidden_gst[$key];
-					$newQuotationDetail->quotationdetail_total_amount = $hidden_price_gst[$key];
-					$newQuotationDetail->quotationdetail_gst_status = 1;
-					$newQuotationDetail->save();									
+				foreach($quotationDetailList as $key => $n ){
+					if($n != NULL){
+						if($unit[$key] == NULL){
+							$unit[$key] = "-";
+						}
+						$newQuotationDetail = new QuotationDetail();
+						$newQuotationDetail->quotationdetail_quotationid = $quotation_id;
+						$newQuotationDetail->quotationdetail_productid = $n;
+						$newQuotationDetail->quotationdetail_partno = "lol";
+						$newQuotationDetail->quotationdetail_productname = $hidden_product_name[$key];
+						$newQuotationDetail->quotationdetail_producttype = $productType[$key];
+						$newQuotationDetail->quotationdetail_unit = $qty[$key];
+						$newQuotationDetail->quotationdetail_unitname = $unit[$key];
+						$newQuotationDetail->quotationdetail_product_cost = $cost[$key];
+						$newQuotationDetail->quotationdetail_price = $hidden_price[$key];
+						$newQuotationDetail->quotationdetail_tax_code = $hidden_tax_code[$key];
+						$newQuotationDetail->quotationdetail_tax_rate = $hidden_tax_rate[$key];
+						$newQuotationDetail->quotationdetail_tax_amount = $hidden_gst[$key];
+						$newQuotationDetail->quotationdetail_total_amount = $hidden_price_gst[$key];
+						$newQuotationDetail->quotationdetail_gst_status = 1;
+						$newQuotationDetail->save();	
+					}
 				}		
 			}
 		}
@@ -180,6 +261,11 @@ class QuotationController extends Controller
 		$thisCustomer = Customer::findOne($customerID);
 		$uid = Yii::$app->user->identity->user_id;
 		$uname = Yii::$app->user->identity->user_name;
+		$details = [];
+		
+		foreach($quotationDetails as $detail){
+			$details[] = $detail->quotationdetail_id;
+		}
 		
 		if(isset($_POST['description'])){
 			$quotationDetailList = $_POST['description'];
@@ -191,6 +277,7 @@ class QuotationController extends Controller
 			$qty = $_POST['qty'];
 			$unit = $_POST['unit'];
 			$cost = $_POST['cost'];
+			$remarks = $_POST['remarks'];
 			$hidden_price = $_POST['hidden_price'];
 			$hidden_gst = $_POST['hidden_gst'];
 			$hidden_tax_code = $_POST['hidden_tax_code'];
@@ -201,8 +288,12 @@ class QuotationController extends Controller
 			$hidden_gstpricetotal = $_POST['hidden_gstpricetotal'];
 			$hidden_id = $_POST['hidden_id'];
 			$hidden_quotationid = $_POST['hidden_quotationid'];
+			$hidden_product_name = $_POST['hidden_product_name'];
 			
 			if($quotationDetailList != NULL){
+				if($remarks == NULL){
+					$remarks = "-";
+				}
 				$updateQuotation = $this->findModel($id);;
 				$updateQuotation->quotation_id = $quotation_id;
 				$updateQuotation->quotation_no = $quotation_no;
@@ -211,7 +302,7 @@ class QuotationController extends Controller
 				$updateQuotation->quotation_customerid = $customer_id;
 				$updateQuotation->quotation_createid = $uid;
 				$updateQuotation->quotation_createname = $uname;
-				$updateQuotation->quotation_remark = "lol";
+				$updateQuotation->quotation_remark = $remarks;
 				$updateQuotation->quotation_system = "y";
 				$updateQuotation->quotation_partno = "y";
 				
@@ -230,12 +321,16 @@ class QuotationController extends Controller
 				
 				$updateQuotation->save();
 				foreach($quotationDetailList as $key => $n ){
-					if($hidden_quotationid[$key] != $id || $hidden_quotationid[$key] == NULL || $hidden_quotationid[$key] == ''){
+					if($hidden_quotationid[$key] == NULL || $hidden_quotationid[$key] == ''){						
+						if($unit[$key] == NULL){
+							$unit[$key] = "-";
+						}
 						$newQuotationDetail = new QuotationDetail();
 						$newQuotationDetail->quotationdetail_quotationid = $quotation_id;
 						$newQuotationDetail->quotationdetail_productid = $n;
 						$newQuotationDetail->quotationdetail_partno = "lol";
-						$newQuotationDetail->quotationdetail_productname = "lol";
+						$newQuotationDetail->quotationdetail_productname = $hidden_product_name[$key];
+						$newQuotationDetail->quotationdetail_producttype = $productType[$key];
 						$newQuotationDetail->quotationdetail_unit = $qty[$key];
 						$newQuotationDetail->quotationdetail_unitname = $unit[$key];
 						$newQuotationDetail->quotationdetail_product_cost = $cost[$key];
@@ -246,13 +341,21 @@ class QuotationController extends Controller
 						$newQuotationDetail->quotationdetail_total_amount = $hidden_price_gst[$key];
 						$newQuotationDetail->quotationdetail_gst_status = 1;
 						$newQuotationDetail->save();
-					}elseif($hidden_quotationid[$key] == $id){
+					}elseif(in_array($hidden_quotationid[$key], $details)){
+						$delete = array_search($hidden_quotationid[$key],$details);
+						if($delete!==false){
+							unset($details[$delete]);
+						}
+						if($unit[$key] == NULL){
+							$unit[$key] = "-";
+						}
 						$qid = $hidden_id[$key];
 						$updateQuotationDetail = QuotationDetail::findOne($qid);
 						$updateQuotationDetail->quotationdetail_quotationid = $quotation_id;
 						$updateQuotationDetail->quotationdetail_productid = $n;
 						$updateQuotationDetail->quotationdetail_partno = "lol";
-						$updateQuotationDetail->quotationdetail_productname = "lol";
+						$updateQuotationDetail->quotationdetail_productname = $hidden_product_name[$key];
+						$updateQuotationDetail->quotationdetail_producttype = $productType[$key];
 						$updateQuotationDetail->quotationdetail_unit = $qty[$key];
 						$updateQuotationDetail->quotationdetail_unitname = $unit[$key];
 						$updateQuotationDetail->quotationdetail_product_cost = $cost[$key];
@@ -264,7 +367,10 @@ class QuotationController extends Controller
 						$updateQuotationDetail->quotationdetail_gst_status = 1;
 						$updateQuotationDetail->save();
 					}					
-				}		
+				}
+				foreach($details as $delete){
+					QuotationDetail::findOne($delete)->delete();
+				}
 			}
 		}
 		
